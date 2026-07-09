@@ -448,7 +448,7 @@ function containsPhrase(textWords, tokens, maxGap = 2) {
 
 // ---------- Claude API（SOS 提词等） ----------
 async function callClaude(prompt) {
-  const res = await fetch("/api/claude", {
+  const res = await fetch("/api/text", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ prompt }),
@@ -2317,13 +2317,23 @@ function StatCard({ label, value, unit }) {
 
 /* ================= M4 · 幕间 + 动态剧情 + 场景卡 ================= */
 
-// 图片生成接口预留：接入自备模型时定义 window.DUO_IMAGE_API = async (prompt) => imageUrl
+// 图片生成：优先使用自定义浏览器注入函数，其次走 Vercel /api/image；未配置时降级 SVG 场景卡
 async function generateSceneImage(prompt) {
   try {
     if (typeof window.DUO_IMAGE_API === "function") {
       const url = await window.DUO_IMAGE_API(prompt);
       if (typeof url === "string" && url) return url;
     }
+  } catch {}
+  try {
+    const res = await fetch("/api/image", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (typeof data.imageUrl === "string" && data.imageUrl) return data.imageUrl;
   } catch {}
   return null; // 未接入时降级为程序化场景卡
 }

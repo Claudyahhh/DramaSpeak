@@ -237,38 +237,98 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Missing prompt" });
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
+  const provider = (
+    process.env.TEXT_PROVIDER ||
+    (process.env.GLM_API_KEY ? "glm" : "") ||
+    (process.env.TEXT_API_KEY ? "openai-compatible" : "") ||
+    (process.env.ANTHROPIC_API_KEY ? "anthropic" : "")
+  ).toLowerCase();
+
+  if (!provider) {
     return res.status(200).json({ text: fallback(prompt), demo: true });
   }
 
   try {
-    const anthropicRes = await fetch("https://api.anthropic.com/v1/messages", {
+    const text =
+      provider === "anthropic"
+        ? await callAnthropic(prompt)
+        : provider === "glm"
+        ? await callOpenAICompatible(prompt, {
+            apiKey: process.env.GLM_API_KEY || process.env.TEXT_API_KEY,
+            baseUrl: process.env.GLM_BASE_URL || "https://open.bigmodel.cn/api/paas/v4",
+            model: process.env.GLM_MODEL || process.env.TEXT_MODEL || "glm-4-flash",
+            label: "GLM",
+          })
+        : await callOpenAICompatible(prompt, {
+            apiKey: process.env.TEXT_API_KEY,
+            baseUrl: process.env.TEXT_BASE_URL,
+            model: process.env.TEXT_MODEL,
+            label: "OpenAI-compatible",
+          });
+
+    return res.status(200).json({ text, provider });
+  } catch (error) {
+    return res.status(500).json({ error: "Text model API error", detail: error.message });
+  }
+}
+
+async function callAnthropic(prompt) {
+  const apiKey = process.env.ANTHROPIC_API_KEY || process.env.TEXT_API_KEY;
+  if (!apiKey) throw new Error("Missing ANTHROPIC_API_KEY");
+
+  const anthropicRes = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+    },
+    body: JSON.stringify({
+      model: process.env.ANTHROPIC_MODEL || process.env.TEXT_MODEL || "claude-sonnet-4-20250514",
+      max_tokens: Number(process.env.TEXT_MAX_TOKENS || 1200),
+      messages: [{ role: "user", content: prompt }],
+    }),
+  });
+
+  if (!anthropicRes.ok) {
+    const detail = await anthropicRes.text();
+    throw new Error(`Anthropic request failed: ${detail}`);
+  }
+
+  const data = await anthropicRes.json();
+  return (data.content || [])
+    .filter((block) => block.type === "text")
+    .map((block) => block.text)
+    .join("\n");
+}
+
+async function callOpenAICompatible(prompt, { apiKey, baseUrl, model, label }) {
+  if (!apiKey) throw new Error(`Missing API key for ${label}`);
+  if (!baseUrl) throw new Error(`Missing base URL for ${label}`);
+  if (!model) throw new Error(`Missing model for ${label}`);
+
+  const endpoint = `${baseUrl.replace(/\/$/, "")}/chat/completions`;
+  const modelRes = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
+        Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-20250514",
-        max_tokens: 1200,
+        model,
         messages: [{ role: "user", content: prompt }],
+        temperature: Number(process.env.TEXT_TEMPERATURE || 0.7),
+        max_tokens: Number(process.env.TEXT_MAX_TOKENS || 1200),
       }),
     });
 
-    if (!anthropicRes.ok) {
-      const detail = await anthropicRes.text();
-      return res.status(502).json({ error: "Anthropic request failed", detail });
-    }
-
-    const data = await anthropicRes.json();
-    const text = (data.content || [])
-      .filter((block) => block.type === "text")
-      .map((block) => block.text)
-      .join("\n");
-    return res.status(200).json({ text });
-  } catch (error) {
-    return res.status(500).json({ error: "Claude API error", detail: error.message });
+  if (!modelRes.ok) {
+    const detail = await modelRes.text();
+    throw new Error(`${label} request failed: ${detail}`);
   }
+
+  const data = await modelRes.json();
+  const text = data.choices?.[0]?.message?.content || data.choices?.[0]?.text || "";
+  if (!text) throw new Error(`${label} response did not include text`);
+  return text;
 }
