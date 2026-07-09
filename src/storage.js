@@ -49,17 +49,33 @@ const listKeys = (prefix) => {
 if (typeof window !== "undefined" && !window.storage) {
   window.storage = {
     async get(key, shared = true) {
+      if (shared) {
+        const remote = await remoteStorage({ op: "get", key });
+        if (remote.ok) return remote.value == null ? null : { key, value: remote.value };
+      }
       const value = readValue(storeKey(key, shared));
       return value == null ? null : { key, value };
     },
     async set(key, value, shared = true) {
+      if (shared) {
+        const remote = await remoteStorage({ op: "set", key, value });
+        if (remote.ok) return { key, value };
+      }
       writeValue(storeKey(key, shared), value);
       return { key, value };
     },
     async delete(key, shared = true) {
+      if (shared) {
+        const remote = await remoteStorage({ op: "delete", key });
+        if (remote.ok) return;
+      }
       deleteValue(storeKey(key, shared));
     },
     async list(prefix, shared = true) {
+      if (shared) {
+        const remote = await remoteStorage({ op: "list", prefix });
+        if (remote.ok) return { keys: remote.keys || [] };
+      }
       const scopedPrefix = storeKey(prefix, shared);
       const keys = listKeys(scopedPrefix).map((key) =>
         key.replace(/^(shared|private):/, "")
@@ -67,4 +83,19 @@ if (typeof window !== "undefined" && !window.storage) {
       return { keys };
     },
   };
+}
+
+async function remoteStorage(payload) {
+  try {
+    const res = await fetch("/api/storage", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) return { ok: false };
+    const data = await res.json();
+    return { ok: true, ...data };
+  } catch {
+    return { ok: false };
+  }
 }

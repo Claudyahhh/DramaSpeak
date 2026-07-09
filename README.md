@@ -17,6 +17,41 @@ vercel --prod
 
 ## Environment
 
+### 两人联机房间：免费云端存储
+
+为了让朋友能用房间码加入同一个房间，必须配置一个共享存储。当前实现使用 Upstash Redis REST，适合两个人自用和早期迭代。
+
+在 Vercel Project Settings -> Environment Variables 添加：
+
+```bash
+UPSTASH_REDIS_REST_URL=https://...
+UPSTASH_REDIS_REST_TOKEN=...
+STORAGE_NAMESPACE=duo-stage
+```
+
+配置后会同步这些共享数据：
+
+```text
+room:{code}:meta
+room:{code}:state
+room:{code}:member:{userId}
+room:{code}:lines:{sessionId}:{userId}
+room:{code}:review
+cscript:{id}
+```
+
+这些仍保留在各自浏览器本地：
+
+```text
+profile
+notebook
+prep:{scriptId}
+lastRoom
+myScriptIds
+```
+
+没有配置 Upstash 时，应用会自动退回本地存储，只适合单人 demo，不能跨设备加入同一个房间。
+
 文本模型走 `/api/text`。默认没有 key 时会返回 demo 兜底内容，保证流程可演示。生产环境建议在 Vercel Project Settings -> Environment Variables 里配置以下任一方案。
 
 ### Anthropic / Claude
