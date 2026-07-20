@@ -39,9 +39,9 @@ const FONT_CSS = `
 `;
 
 /* ============================================================
-   预置剧本库（3 部：职场 / 观点交锋 / 社交闲聊）
+   旧版预置剧本库（保留数据兼容）
    ============================================================ */
-const SCRIPTS = [
+const LEGACY_SCRIPTS = [
   {
     id: "deadline",
     title: "生死线谈判",
@@ -347,6 +347,102 @@ const SCRIPTS = [
         tip: "加上具体时间，客套话就变成了真邀请。",
       },
     ],
+  },
+];
+
+/* ============================================================
+   预置剧本库（3 部：25 分钟男女双主角 Drama）
+   ============================================================ */
+const SCRIPTS = [
+  {
+    id: "last-flight",
+    title: "最后一班夜航",
+    en: "The Last Flight Confession",
+    genre: "悬疑谈判",
+    difficulty: 3,
+    minutes: 25,
+    logline: "暴雨困住最后一班航班，一名危机公关和一名调查记者必须决定：真相今晚起飞，还是有人先坦白。",
+    world: "台风夜的海岛机场，唯一能离开的夜航延误两小时。贵宾休息室里，Maya 握着一段录音，Ethan 则被公司派来处理一场可能毁掉品牌的事故。",
+    relationship: "三年前有过短暂交集的陌生人。她掌握他的秘密，他却可能是唯一能保护她消息源的人。",
+    acts: [
+      { t: "第一幕 · 困局", d: "登机口关闭。Maya 明示自己知道事故真相，Ethan 必须先弄清她会把故事写到什么程度。" },
+      { t: "第二幕 · 录音", teaser: "一段录音把两人的旧事也一并扯了出来……" },
+      { t: "第三幕 · 起飞", teaser: "广播催促登机；在飞机起飞前，必须有人赌一次信任。" },
+    ],
+    hook: "由 Maya 开场：合上电脑，看着 Ethan 说一句“你比我想的来得快”。",
+    roles: {
+      A: {
+        name: "Ethan", gender: "男", title: "危机公关", persona: "男性，冷静迷人，擅长把危险的问题变成可谈的条件。", stance: "想让报道至少延后十二小时，以便保护一位无辜员工；但不能直接要求她压稿。",
+        tasks: { main: { goal: "让 Maya 主动同意延后发布十二小时，且你不能说“请别发”。", judge: "她明确答应延后，或提出可接受的发布时间。" }, bonus: { goal: "在气氛最紧张时，让她真心笑一次。" } },
+        p0: [{ en: "I'm not asking you to bury the story.", zh: "我不是要你把新闻压下去。" }, { en: "What would make you feel safe waiting?", zh: "怎样你才会安心等一等？" }],
+      },
+      B: {
+        name: "Maya", gender: "女", title: "调查记者", persona: "女性，敏锐倔强，讨厌被操控，但不愿伤害真正无辜的人。", stance: "必须确认公司隐瞒了什么，并决定录音是否今晚发出；绝不能暴露消息源。",
+        tasks: { main: { goal: "不透露消息源，让 Ethan 承认一条公司曾隐瞒的具体事实。", judge: "他清楚承认一个事实，而不是泛泛道歉。" }, bonus: { goal: "让 Ethan 主动提出保护你的消息源。" } },
+        p0: [{ en: "Off the record, what are you not telling me?", zh: "不对外引用的话，你还没告诉我什么？" }, { en: "I'm willing to listen, not to be managed.", zh: "我愿意听，但不是来被你操控的。" }],
+      },
+    },
+    p0shared: [{ en: "Help me understand your position.", zh: "帮我理解你的立场。" }, { en: "Let's be precise about what happened.", zh: "我们把发生的事说准确。" }, { en: "I'm asking for trust, not a favor.", zh: "我要的是信任，不是人情。" }, { en: "What are you willing to put on the table?", zh: "你愿意拿出什么条件？" }, { en: "We are running out of time.", zh: "我们没时间了。" }],
+    p1: [{ from: "Don't publish it.", to: "Would you consider holding it until we verify one more thing?", zh: "请求延后而不显得命令。" }, { from: "Tell me the truth.", to: "What part of the story are you still holding back?", zh: "逼近真相但不粗暴。" }, { from: "I can't say.", to: "I can't disclose that without compromising someone.", zh: "拒绝透露来源。" }, { from: "I believe you.", to: "I'm prepared to take you at your word.", zh: "有分寸地给出信任。" }],
+    p2: [{ en: "buy some time", zh: "争取一点时间" }, { en: "read between the lines", zh: "听出言外之意" }, { en: "give someone your word", zh: "郑重承诺" }, { en: "a matter of principle", zh: "原则问题" }, { en: "come clean", zh: "坦白交代" }],
+    p3: [{ en: "Trust is a currency, and we're both nearly broke.", zh: "信任是货币，而我们都快破产了。" }, { en: "Don't confuse restraint with surrender.", zh: "别把克制误解成投降。" }, { en: "The truth can wait an hour; consequences can't.", zh: "真相可以等一小时，后果不会。" }],
+    quiz: [{ situation: "你想争取一点时间，但不能直接说“别发”。", reference: "Would you consider holding it until we verify one more thing?", tip: "consider + holding it 是礼貌且有策略的请求。" }, { situation: "你要拒绝交出消息源。", reference: "I can't disclose that without compromising someone.", tip: "用后果解释边界，既坚定又专业。" }, { situation: "你想让对方给出实际条件。", reference: "What are you willing to put on the table?", tip: "谈判里用 put on the table 要求具体承诺。" }, { situation: "对话快失控了，拉回共同目标。", reference: "We are running out of time. Let's be precise about what happened.", tip: "先标明压力，再拉回事实。" }],
+  },
+  {
+    id: "plus-one",
+    title: "前任婚礼假情侣",
+    en: "The Plus-One Alibi",
+    genre: "浪漫喜剧",
+    difficulty: 2,
+    minutes: 25,
+    logline: "婚礼现场，两个嘴硬的老同学临时假扮情侣；问题是，女方的前任正坐在主桌，男方也藏着一个不能说的真相。",
+    world: "巴厘岛海边婚礼的晚宴前，Nina 的前任带着新伴侣出现。她抓来刚落地的大学同学 Leo 救场，并承诺只演到第一支舞结束。",
+    relationship: "大学时互相嫌弃却很了解对方的老同学。多年未见，一见面就被迫扮成亲密爱侣。",
+    acts: [
+      { t: "第一幕 · 认领", d: "在入场前的十分钟里对口供：怎么认识、在一起多久、谁先表白。每个细节都可能被拆穿。" },
+      { t: "第二幕 · 加戏", teaser: "前任带着问题过来，假戏必须临时加码……" },
+      { t: "第三幕 · 真话", teaser: "第一支舞快结束了，可两人都没有马上松手。" },
+    ],
+    hook: "由 Nina 开场：拽住 Leo 的袖子，急促地说“帮我演十分钟，价钱你开”。",
+    roles: {
+      A: {
+        name: "Leo", gender: "男", title: "婚礼救场", persona: "男性，嘴贫镇定，临场反应很快，其实一直介意当年没告别。", stance: "答应配合到第一支舞结束，但想知道 Nina 当年为什么突然断联。", tasks: { main: { goal: "不直接问“你当年为什么消失”，让 Nina 主动说出当年断联的真实原因。", judge: "她给出一个明确原因，而不是只说“很复杂”。" }, bonus: { goal: "让她在别人面前主动补充一个关于你的优点。" } }, p0: [{ en: "Go with it — I have a plan.", zh: "配合我，我有办法。" }, { en: "That is not the version I remember.", zh: "这和我记得的版本可不一样。" }] },
+      B: {
+        name: "Nina", gender: "女", title: "临时女友", persona: "女性，外表从容，内心好胜，越慌越会讲漂亮话。", stance: "要体面度过前任的婚礼，绝不能让人看出自己被刺痛；也不想再欠 Leo 人情。", tasks: { main: { goal: "让 Leo 至少一次主动把假情侣演得更真，而不是只机械配合。", judge: "他自发做出亲密举动或补充亲密细节。" }, bonus: { goal: "在不露馅的前提下，让前任问一句“你们是真的吗？”" } }, p0: [{ en: "For the record, this is strictly temporary.", zh: "先说好，这完全是临时的。" }, { en: "Can you please stop making this easy for him?", zh: "你能不能别让他那么好过？" }] },
+    },
+    p0shared: [{ en: "Play along.", zh: "配合我演。" }, { en: "Don't make this weird.", zh: "别把事情弄尴尬。" }, { en: "We need a better backstory.", zh: "我们得编个更像样的背景故事。" }, { en: "You owe me an explanation.", zh: "你欠我一个解释。" }, { en: "Just smile and follow my lead.", zh: "笑一下，跟着我来。" }],
+    p1: [{ from: "Pretend to be my boyfriend.", to: "Could you do me a huge favor and play along for ten minutes?", zh: "请求帮忙更自然。" }, { from: "Why did you disappear?", to: "What happened after you stopped answering my messages?", zh: "问旧事但不给人逼供感。" }, { from: "You are acting too much.", to: "You're making this performance dangerously convincing.", zh: "打趣式表达心动。" }, { from: "Don't leave me.", to: "Stay until the song ends. Then you can walk away.", zh: "克制地挽留。" }],
+    p2: [{ en: "save face", zh: "保住面子" }, { en: "sell the story", zh: "把说辞演得可信" }, { en: "throw someone off", zh: "让人失去判断" }, { en: "have a soft spot for", zh: "对某人心软" }, { en: "keep up appearances", zh: "维持表面体面" }],
+    p3: [{ en: "We are one question away from a complete disaster.", zh: "我们离彻底穿帮只差一个问题。" }, { en: "I forgot how dangerous you are when you're cornered.", zh: "我忘了你被逼急时有多危险。" }, { en: "Maybe the act is only obvious to us.", zh: "也许只有我们觉得这是演的。" }],
+    quiz: [{ situation: "你想请对方临时扮演情侣。", reference: "Could you do me a huge favor and play along for ten minutes?", tip: "play along 比 pretend 更口语、更自然。" }, { situation: "提醒对方别把亲密戏演得太过。", reference: "You're making this performance dangerously convincing.", tip: "用玩笑表达紧张感，戏会更好玩。" }, { situation: "你要追问断联的事。", reference: "What happened after you stopped answering my messages?", tip: "聚焦事件，避免直接指责。" }, { situation: "舞快结束，你还不想对方离开。", reference: "Stay until the song ends. Then you can walk away.", tip: "短句留白，比直接挽留更有戏。" }],
+  },
+  {
+    id: "missing-demo",
+    title: "消失的发布会 Demo",
+    en: "The Vanishing Demo",
+    genre: "创业悬疑",
+    difficulty: 3,
+    minutes: 25,
+    logline: "发布会前四十分钟，明星产品的 Demo 突然消失。创始人和最大投资人的代表锁在后台，得先决定救项目，还是揭穿一个谎言。",
+    world: "上海一场 AI 产品发布会后台。十分钟后媒体将进场，核心演示链接被删除，只有 Adrian 和投资方代表 Chloe 知道它从来没有完全准备好。",
+    relationship: "她投过他的公司，也曾是他的导师。如今一边要保住投资人信任，一边要保住团队和真相。",
+    acts: [
+      { t: "第一幕 · 黑屏", d: "屏幕一片黑。Adrian 想先找备份，Chloe 则坚持先知道 Demo 为什么会消失。" },
+      { t: "第二幕 · 底牌", teaser: "一封定时邮件揭露：有人提前安排好了这场事故。" },
+      { t: "第三幕 · 上台", teaser: "倒计时归零，他们得决定讲一个冒险的真话，还是演一场完美的假象。" },
+    ],
+    hook: "由 Chloe 开场：拔掉演示电脑的网线，对 Adrian 说“现在，给我没有公关版本的答案”。",
+    roles: {
+      A: {
+        name: "Adrian", gender: "男", title: "联合创始人", persona: "男性，野心勃勃、反应极快，习惯先解决问题再承认问题。", stance: "想让发布会照常进行，保护团队；但知道真实模型还没达到宣传水平。", tasks: { main: { goal: "说服 Chloe 接受一个诚实但仍能上台的发布方案。", judge: "她明确同意具体方案并愿意站台或不叫停。" }, bonus: { goal: "让她亲口说出“我还是相信你”。" } }, p0: [{ en: "Give me ten minutes before you decide.", zh: "在你决定前，给我十分钟。" }, { en: "I can defend the product, not a lie.", zh: "我能为产品辩护，但不能为谎言辩护。" }] },
+      B: {
+        name: "Chloe", gender: "女", title: "投资人代表", persona: "女性，锋利冷静，最讨厌创始人用愿景掩盖执行问题。", stance: "必须确定这是技术失误还是有意误导；她不想毁掉公司，但也不会替谎言背书。", tasks: { main: { goal: "不直接指控 Adrian 造假，让他主动说出 Demo 与真实产品的差距。", judge: "他明确说明至少一项未完成或被夸大的能力。" }, bonus: { goal: "让 Adrian 主动说出一个他害怕失去的东西。" } }, p0: [{ en: "Walk me through what actually happened.", zh: "从头讲讲到底发生了什么。" }, { en: "I need facts before I offer cover.", zh: "给你兜底前，我需要事实。" }] },
+    },
+    p0shared: [{ en: "Let's separate the problem from the panic.", zh: "先把问题和恐慌分开。" }, { en: "What can we prove right now?", zh: "我们现在能证明什么？" }, { en: "That is a risk I need you to name.", zh: "这是你需要明确说出的风险。" }, { en: "I won't sign off on a half-truth.", zh: "我不会为半真半假的说法背书。" }, { en: "We still have a choice.", zh: "我们还有选择。" }],
+    p1: [{ from: "The demo is broken.", to: "The demo isn't representative of the product in its current state.", zh: "说明问题而不慌乱。" }, { from: "Trust me.", to: "Let me earn your trust with a plan you can challenge.", zh: "把空口保证变成可检验方案。" }, { from: "We can fake it.", to: "We could frame this as a controlled preview — if we're transparent about the limits.", zh: "提出风险可控的替代方案。" }, { from: "It is your fault.", to: "Where did the decision-making break down?", zh: "追责时问机制，不先攻击人。" }],
+    p2: [{ en: "buy into the vision", zh: "相信愿景" }, { en: "move the goalposts", zh: "临时改变标准" }, { en: "own the mistake", zh: "承担错误" }, { en: "a controlled preview", zh: "受控预览" }, { en: "call the shots", zh: "拍板决定" }],
+    p3: [{ en: "A good story is not the same thing as a defensible claim.", zh: "好故事不等于站得住的主张。" }, { en: "You don't get to borrow my reputation to cover your uncertainty.", zh: "你不能拿我的信誉掩盖你的不确定。" }, { en: "The bravest pitch may be the one that admits what is unfinished.", zh: "最勇敢的路演，也许是承认尚未完成的那个。" }],
+    quiz: [{ situation: "你要请求十分钟时间，但不能显得逃避。", reference: "Give me ten minutes before you decide. I can defend the product, not a lie.", tip: "给出明确时间，并先划清诚实边界。" }, { situation: "你要让对方解释问题，不直接指控。", reference: "Walk me through what actually happened.", tip: "walk me through 要求完整复盘，很适合高压场景。" }, { situation: "提出一个不欺骗媒体的替代方案。", reference: "We could frame this as a controlled preview — if we're transparent about the limits.", tip: "先给方案，再给透明条件。" }, { situation: "你们还在争执，提醒对方回到可做的事。", reference: "Let's separate the problem from the panic. What can we prove right now?", tip: "把情绪和问题拆开，是危机沟通的核心。" }],
   },
 ];
 
@@ -3270,12 +3366,12 @@ function buildConceptsPrompt(mode, seed, genres, avoid) {
       : mode === "genre"
       ? `Genre mix: ${genres.join(" × ")}. ${seed ? "Extra wish: " + seed : ""}`
       : `Story seed: ${seed}`;
-  return `You are a playwright designing two-person English roleplay scenarios for Chinese B1-B2 learners. The two players must WIN THROUGH TALKING — every concept needs verbal tension (information gaps, conflicting interests, time pressure, or secrets).
+  return `You are a playwright designing playful, theatre-first, two-person English roleplay scenarios for Chinese B1-B2 learners. Each scenario is a roughly 25-minute mini drama with exactly one male protagonist and one female protagonist. The two players must WIN THROUGH TALKING — every concept needs verbal tension (information gaps, conflicting interests, time pressure, or secrets), a reveal or reversal, and a satisfying ending.
 
 ${src}
 ${avoid ? `Must be clearly different from these previous concepts: ${avoid}` : ""}
 
-Give exactly 3 distinct story concepts. All text in Chinese except character names.
+Give exactly 3 distinct story concepts. Make titles memorable, playful, and specific; avoid generic workplace debates or plain daily-life scenes. Make the roles' gender unambiguous from their names and identities. All text in Chinese except character names.
 Respond ONLY with JSON, no markdown fences:
 {"concepts":[{"title":"中文剧名(2-6字)","tagline":"一句话钩子(≤25字)","conflict":"核心冲突(≤30字)","roles":[{"name":"英文名","title":"中文身份(≤8字)"},{"name":"英文名","title":"中文身份(≤8字)"}]}]}`;
 }
@@ -3286,11 +3382,17 @@ function buildDramaPrompt(seedDesc, spice, goals, revision) {
     spicy: "hidden tasks must require indirect strategy (probing, steering, withholding) to achieve",
     drama: "hidden tasks should be ambitious and theatrical, plus playful bonus tasks",
   }[spice];
-  return `You are a playwright-designer of two-person English roleplay dramas for Chinese B1-B2 learners.
+  return `You are a playwright-designer of playful, theatre-first, two-person English roleplay dramas for Chinese B1-B2 learners.
 
 STORY BASIS: ${seedDesc}
 LANGUAGE GOALS the pair wants to practice: ${goals.join(", ") || "general conversation"} — the plot MUST force these skills (e.g. if practicing polite refusal, the plot must contain a request that must be refused).
 ${revision ? `REVISION REQUEST from the creator (apply it): ${revision}` : ""}
+
+DRAMA FORMAT (critical):
+- Target performance time is about 25 minutes; set "minutes" to 25.
+- Exactly two protagonists: Role A is male and Role B is female. Make their genders unmistakable through names, identities, and persona wording.
+- Give the story a vivid premise, a twist/reversal, and a finale with a real choice. It should feel fun to perform, not like an English textbook debate.
+- Use a memorable, specific title; avoid generic titles such as "The Debate" or "A Meeting".
 
 HIDDEN TASK RULES (critical):
 - Each role gets 1 main task + 1 bonus task, secret from the other player.
@@ -3302,7 +3404,7 @@ Self-check before answering: does every act force the pair to talk? Are tasks ju
 
 All text in Chinese except: "en" (English title), character names, "imagePrompt" (English).
 Respond ONLY with JSON, no markdown fences:
-{"title":"中文剧名","en":"English Title","genre":"题材(2-4字)","difficulty":2,"minutes":20,"logline":"一句话简介(≤40字)","world":"背景设定(≤80字)","relationship":"两人关系与此刻为何非谈不可(≤40字)","acts":[{"t":"第一幕 · 二字副标","d":"第一幕完整说明(≤50字)"},{"t":"第二幕 · 二字副标","teaser":"悬念一句(≤20字)"},{"t":"第三幕 · 二字副标","teaser":"悬念一句(≤20字)"}],"hook":"开场钩子:由谁以什么方式开场(≤30字)","imagePrompt":"one-sentence English scene image prompt","roles":{"A":{"name":"英文名","title":"身份(≤8字)","persona":"性格(≤25字)","stance":"立场(≤30字)","tasks":{"main":{"goal":"主任务(≤40字)","judge":"判定标准(≤25字)"},"bonus":{"goal":"彩蛋任务(≤30字)"}}},"B":{"name":"","title":"","persona":"","stance":"","tasks":{"main":{"goal":"","judge":""},"bonus":{"goal":""}}}}}`;
+{"title":"中文剧名","en":"English Title","genre":"题材(2-4字)","difficulty":2,"minutes":25,"logline":"一句话简介(≤40字)","world":"背景设定(≤80字)","relationship":"两人关系与此刻为何非谈不可(≤40字)","acts":[{"t":"第一幕 · 二字副标","d":"第一幕完整说明(≤50字)"},{"t":"第二幕 · 二字副标","teaser":"悬念一句(≤20字)"},{"t":"第三幕 · 二字副标","teaser":"悬念一句(≤20字)"}],"hook":"开场钩子:由谁以什么方式开场(≤30字)","imagePrompt":"one-sentence English scene image prompt","roles":{"A":{"name":"英文男名","gender":"男","title":"身份(≤8字)","persona":"男性，性格(≤25字)","stance":"立场(≤30字)","tasks":{"main":{"goal":"主任务(≤40字)","judge":"判定标准(≤25字)"},"bonus":{"goal":"彩蛋任务(≤30字)"}}},"B":{"name":"英文女名","gender":"女","title":"身份(≤8字)","persona":"女性，性格(≤25字)","stance":"立场(≤30字)","tasks":{"main":{"goal":"","judge":""},"bonus":{"goal":""}}}}}`;
 }
 
 function buildLangPrompt(core, goals) {
@@ -3334,7 +3436,7 @@ function assembleScript(core, lang) {
     en: core.en,
     genre: core.genre || "自创",
     difficulty: Math.min(3, Math.max(1, core.difficulty || 2)),
-    minutes: core.minutes || 20,
+    minutes: core.minutes || 25,
     logline: core.logline,
     world: core.world,
     relationship: core.relationship,
