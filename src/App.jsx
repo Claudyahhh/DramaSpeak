@@ -384,6 +384,20 @@ const SCRIPTS = [
     },
     p0shared: [{ en: "Help me understand your position.", zh: "帮我理解你的立场。" }, { en: "Let's be precise about what happened.", zh: "我们把发生的事说准确。" }, { en: "I'm asking for trust, not a favor.", zh: "我要的是信任，不是人情。" }, { en: "What are you willing to put on the table?", zh: "你愿意拿出什么条件？" }, { en: "We are running out of time.", zh: "我们没时间了。" }],
     p1: [{ from: "Don't publish it.", to: "Would you consider holding it until we verify one more thing?", zh: "请求延后而不显得命令。" }, { from: "Tell me the truth.", to: "What part of the story are you still holding back?", zh: "逼近真相但不粗暴。" }, { from: "I can't say.", to: "I can't disclose that without compromising someone.", zh: "拒绝透露来源。" }, { from: "I believe you.", to: "I'm prepared to take you at your word.", zh: "有分寸地给出信任。" }],
+    rolePrep: {
+      A: {
+        p1: [{ from: "Don't publish it.", to: "Would you consider holding the piece until boarding call?", zh: "Ethan 的目标是争取时间，而非要求压稿。" }, { from: "Believe me.", to: "I'm prepared to put my name behind that.", zh: "用可承担的承诺换取信任。" }, { from: "Give me time.", to: "Give me one hour to make this right, then the choice is yours.", zh: "给出时间边界，减少对方的不安。" }],
+        p2: [{ en: "buy some time", zh: "争取一点时间" }, { en: "act in good faith", zh: "出于善意行事" }, { en: "make good on a promise", zh: "兑现承诺" }],
+        p3: [{ en: "I'm not asking for mercy; I'm asking for a fair hearing.", zh: "我不是求宽恕，而是希望得到公平陈述的机会。" }, { en: "If I wanted to spin this, I wouldn't be here alone.", zh: "如果我要粉饰此事，就不会独自来见你。" }],
+        quiz: [{ situation: "你想请对方延后报道到登机前。", reference: "Would you consider holding the piece until boarding call?", tip: "具体截止点让请求更容易被接受。" }, { situation: "你要给出可验证的承诺。", reference: "I'm prepared to put my name behind that.", tip: "put my name behind 表示愿意承担信誉。" }, { situation: "你想让对方保留最终决定权。", reference: "Give me one hour to make this right, then the choice is yours.", tip: "把选择还给对方，谈判更有分寸。" }],
+      },
+      B: {
+        p1: [{ from: "What are you hiding?", to: "What part of the story are you still holding back?", zh: "Maya 逼近真相时避免直接指控。" }, { from: "Tell me your source.", to: "I'm not asking for names; I'm asking what you knew and when.", zh: "守住消息源，同时锁定事实。" }, { from: "I don't trust you.", to: "Trust isn't the issue. Accountability is.", zh: "把情绪对抗转为责任问题。" }],
+        p2: [{ en: "go on the record", zh: "接受公开引用" }, { en: "protect a source", zh: "保护消息源" }, { en: "hold someone accountable", zh: "要求某人负责" }],
+        p3: [{ en: "You don't get to decide which facts are inconvenient.", zh: "你不能决定哪些事实算不方便。" }, { en: "I'm willing to listen, but I won't trade the truth for access.", zh: "我愿意听，但不会用真相交换信息渠道。" }],
+        quiz: [{ situation: "你要追问对方隐瞒的部分。", reference: "What part of the story are you still holding back?", tip: "holding back 比 hiding 更适合专业追问。" }, { situation: "你要强调不交出消息源。", reference: "I'm not asking for names; I'm asking what you knew and when.", tip: "用事实范围替代身份信息。" }, { situation: "你要把争论拉回责任。", reference: "Trust isn't the issue. Accountability is.", tip: "短句转场，会显得非常有力量。" }],
+      },
+    },
     p2: [{ en: "buy some time", zh: "争取一点时间" }, { en: "read between the lines", zh: "听出言外之意" }, { en: "give someone your word", zh: "郑重承诺" }, { en: "a matter of principle", zh: "原则问题" }, { en: "come clean", zh: "坦白交代" }],
     p3: [{ en: "Trust is a currency, and we're both nearly broke.", zh: "信任是货币，而我们都快破产了。" }, { en: "Don't confuse restraint with surrender.", zh: "别把克制误解成投降。" }, { en: "The truth can wait an hour; consequences can't.", zh: "真相可以等一小时，后果不会。" }],
     quiz: [{ situation: "你想争取一点时间，但不能直接说“别发”。", reference: "Would you consider holding it until we verify one more thing?", tip: "consider + holding it 是礼貌且有策略的请求。" }, { situation: "你要拒绝交出消息源。", reference: "I can't disclose that without compromising someone.", tip: "用后果解释边界，既坚定又专业。" }, { situation: "你想让对方给出实际条件。", reference: "What are you willing to put on the table?", tip: "谈判里用 put on the table 要求具体承诺。" }, { situation: "对话快失控了，拉回共同目标。", reference: "We are running out of time. Let's be precise about what happened.", tip: "先标明压力，再拉回事实。" }],
@@ -412,6 +426,20 @@ const SCRIPTS = [
     },
     p0shared: [{ en: "Play along.", zh: "配合我演。" }, { en: "Don't make this weird.", zh: "别把事情弄尴尬。" }, { en: "We need a better backstory.", zh: "我们得编个更像样的背景故事。" }, { en: "You owe me an explanation.", zh: "你欠我一个解释。" }, { en: "Just smile and follow my lead.", zh: "笑一下，跟着我来。" }],
     p1: [{ from: "Pretend to be my boyfriend.", to: "Could you do me a huge favor and play along for ten minutes?", zh: "请求帮忙更自然。" }, { from: "Why did you disappear?", to: "What happened after you stopped answering my messages?", zh: "问旧事但不给人逼供感。" }, { from: "You are acting too much.", to: "You're making this performance dangerously convincing.", zh: "打趣式表达心动。" }, { from: "Don't leave me.", to: "Stay until the song ends. Then you can walk away.", zh: "克制地挽留。" }],
+    rolePrep: {
+      A: {
+        p1: [{ from: "Why did you leave?", to: "What happened after you stopped answering my messages?", zh: "Leo 追问旧事，但不把对方逼进角落。" }, { from: "You are lying.", to: "That is not the version I remember.", zh: "用回忆制造张力，而不是直接拆穿。" }, { from: "I will help you.", to: "Go with it — I have a plan.", zh: "临场救场的自然说法。" }],
+        p2: [{ en: "sell the story", zh: "把说辞演得可信" }, { en: "call someone's bluff", zh: "戳穿某人的虚张声势" }, { en: "have a soft spot for", zh: "对某人心软" }],
+        p3: [{ en: "You always did know how to turn a crisis into an entrance.", zh: "你一直很会把危机变成登场。" }, { en: "I came for a wedding, not unfinished business.", zh: "我来参加婚礼，不是来处理旧账。" }],
+        quiz: [{ situation: "你想提醒她的说辞与你记得的不一样。", reference: "That is not the version I remember.", tip: "不直接说 lie，更有戏也更留余地。" }, { situation: "你要临时主导假情侣的剧情。", reference: "Go with it — I have a plan.", tip: "短促有力，适合高压救场。" }, { situation: "你想问断联原因。", reference: "What happened after you stopped answering my messages?", tip: "追问事实，而不是给对方贴标签。" }],
+      },
+      B: {
+        p1: [{ from: "Act like my boyfriend.", to: "Could you do me a huge favor and play along for ten minutes?", zh: "Nina 的请求要紧急但不失礼。" }, { from: "Don't make me look bad.", to: "Can you please stop making this easy for him?", zh: "把难堪变成带刺的玩笑。" }, { from: "Don't leave me.", to: "Stay until the song ends. Then you can walk away.", zh: "用克制的方式挽留。" }],
+        p2: [{ en: "save face", zh: "保住面子" }, { en: "keep up appearances", zh: "维持表面体面" }, { en: "throw someone off", zh: "让人失去判断" }],
+        p3: [{ en: "For someone I haven't seen in years, you're remarkably hard to ignore.", zh: "对一个多年未见的人来说，你实在很难让人忽略。" }, { en: "Don't confuse a good performance with a bad idea.", zh: "别把演得好误当成这是个好主意。" }],
+        quiz: [{ situation: "你要请 Leo 临时救场。", reference: "Could you do me a huge favor and play along for ten minutes?", tip: "huge favor 表示这真是一个不小的人情。" }, { situation: "你想讽刺他太配合，害前任显得轻松。", reference: "Can you please stop making this easy for him?", tip: "用玩笑表达复杂情绪，不会太直白。" }, { situation: "第一支舞快结束，你想留住他。", reference: "Stay until the song ends. Then you can walk away.", tip: "留白让情绪更有张力。" }],
+      },
+    },
     p2: [{ en: "save face", zh: "保住面子" }, { en: "sell the story", zh: "把说辞演得可信" }, { en: "throw someone off", zh: "让人失去判断" }, { en: "have a soft spot for", zh: "对某人心软" }, { en: "keep up appearances", zh: "维持表面体面" }],
     p3: [{ en: "We are one question away from a complete disaster.", zh: "我们离彻底穿帮只差一个问题。" }, { en: "I forgot how dangerous you are when you're cornered.", zh: "我忘了你被逼急时有多危险。" }, { en: "Maybe the act is only obvious to us.", zh: "也许只有我们觉得这是演的。" }],
     quiz: [{ situation: "你想请对方临时扮演情侣。", reference: "Could you do me a huge favor and play along for ten minutes?", tip: "play along 比 pretend 更口语、更自然。" }, { situation: "提醒对方别把亲密戏演得太过。", reference: "You're making this performance dangerously convincing.", tip: "用玩笑表达紧张感，戏会更好玩。" }, { situation: "你要追问断联的事。", reference: "What happened after you stopped answering my messages?", tip: "聚焦事件，避免直接指责。" }, { situation: "舞快结束，你还不想对方离开。", reference: "Stay until the song ends. Then you can walk away.", tip: "短句留白，比直接挽留更有戏。" }],
@@ -440,6 +468,20 @@ const SCRIPTS = [
     },
     p0shared: [{ en: "Let's separate the problem from the panic.", zh: "先把问题和恐慌分开。" }, { en: "What can we prove right now?", zh: "我们现在能证明什么？" }, { en: "That is a risk I need you to name.", zh: "这是你需要明确说出的风险。" }, { en: "I won't sign off on a half-truth.", zh: "我不会为半真半假的说法背书。" }, { en: "We still have a choice.", zh: "我们还有选择。" }],
     p1: [{ from: "The demo is broken.", to: "The demo isn't representative of the product in its current state.", zh: "说明问题而不慌乱。" }, { from: "Trust me.", to: "Let me earn your trust with a plan you can challenge.", zh: "把空口保证变成可检验方案。" }, { from: "We can fake it.", to: "We could frame this as a controlled preview — if we're transparent about the limits.", zh: "提出风险可控的替代方案。" }, { from: "It is your fault.", to: "Where did the decision-making break down?", zh: "追责时问机制，不先攻击人。" }],
+    rolePrep: {
+      A: {
+        p1: [{ from: "Trust me.", to: "Let me earn your trust with a plan you can challenge.", zh: "Adrian 不能空口保证，要给可质疑的方案。" }, { from: "We can fake it.", to: "We could frame this as a controlled preview — if we're transparent about the limits.", zh: "把假演示转为透明的受控预览。" }, { from: "Give me time.", to: "Give me ten minutes before you decide to pull the plug.", zh: "明确请求缓冲时间。" }],
+        p2: [{ en: "own the mistake", zh: "承担错误" }, { en: "buy into the vision", zh: "相信愿景" }, { en: "pull the plug", zh: "叫停、拔掉插头" }],
+        p3: [{ en: "I can defend the product, not a lie.", zh: "我能为产品辩护，但不能为谎言辩护。" }, { en: "The bravest pitch may be the one that admits what is unfinished.", zh: "最勇敢的路演，也许是承认尚未完成的那个。" }],
+        quiz: [{ situation: "你想把空口“信我”变成可讨论的方案。", reference: "Let me earn your trust with a plan you can challenge.", tip: "把 trust 变成可以被检验的行动。" }, { situation: "你要请求对方暂时不要叫停。", reference: "Give me ten minutes before you decide to pull the plug.", tip: "pull the plug 是危机里很地道的“叫停”。" }, { situation: "你想诚实地提出替代发布方式。", reference: "We could frame this as a controlled preview — if we're transparent about the limits.", tip: "先给方案，再补透明条件。" }],
+      },
+      B: {
+        p1: [{ from: "It is your fault.", to: "Where did the decision-making break down?", zh: "Chloe 追责时先问机制，不先攻击人。" }, { from: "The demo is fake.", to: "The demo isn't representative of the product in its current state.", zh: "描述偏差，避免未经证实的指控。" }, { from: "Tell me everything.", to: "Walk me through what actually happened.", zh: "要求完整复盘的专业说法。" }],
+        p2: [{ en: "call the shots", zh: "拍板决定" }, { en: "move the goalposts", zh: "临时改变标准" }, { en: "sign off on", zh: "批准、背书" }],
+        p3: [{ en: "A good story is not the same thing as a defensible claim.", zh: "好故事不等于站得住的主张。" }, { en: "You don't get to borrow my reputation to cover your uncertainty.", zh: "你不能拿我的信誉掩盖你的不确定。" }],
+        quiz: [{ situation: "你想追问究竟哪里出了决策问题。", reference: "Where did the decision-making break down?", tip: "把 blame 改成机制复盘，气势更稳。" }, { situation: "你要让对方完整复盘。", reference: "Walk me through what actually happened.", tip: "walk me through 常用于高压、需要细节的对话。" }, { situation: "你要拒绝为半真半假的话背书。", reference: "I won't sign off on a half-truth.", tip: "sign off on 表示正式批准或认可。" }],
+      },
+    },
     p2: [{ en: "buy into the vision", zh: "相信愿景" }, { en: "move the goalposts", zh: "临时改变标准" }, { en: "own the mistake", zh: "承担错误" }, { en: "a controlled preview", zh: "受控预览" }, { en: "call the shots", zh: "拍板决定" }],
     p3: [{ en: "A good story is not the same thing as a defensible claim.", zh: "好故事不等于站得住的主张。" }, { en: "You don't get to borrow my reputation to cover your uncertainty.", zh: "你不能拿我的信誉掩盖你的不确定。" }, { en: "The bravest pitch may be the one that admits what is unfinished.", zh: "最勇敢的路演，也许是承认尚未完成的那个。" }],
     quiz: [{ situation: "你要请求十分钟时间，但不能显得逃避。", reference: "Give me ten minutes before you decide. I can defend the product, not a lie.", tip: "给出明确时间，并先划清诚实边界。" }, { situation: "你要让对方解释问题，不直接指控。", reference: "Walk me through what actually happened.", tip: "walk me through 要求完整复盘，很适合高压场景。" }, { situation: "提出一个不欺骗媒体的替代方案。", reference: "We could frame this as a controlled preview — if we're transparent about the limits.", tip: "先给方案，再给透明条件。" }, { situation: "你们还在争执，提醒对方回到可做的事。", reference: "Let's separate the problem from the panic. What can we prove right now?", tip: "把情绪和问题拆开，是危机沟通的核心。" }],
@@ -887,6 +929,7 @@ export default function App() {
         <PrepView
           script={prepScript}
           done={!!prepMap[prepScript.id]?.studied}
+          initialRole={members.find((m) => m.userId === profile?.id)?.role}
           onBack={() => setView(room ? "lobby" : "home")}
           onDone={() => markStudied(prepScript.id)}
         />
@@ -1235,10 +1278,18 @@ function Tag({ children, tone }) {
 
 /* ================= 备课页 ================= */
 
-function PrepView({ script, done, onBack, onDone }) {
+function PrepView({ script, done, initialRole, onBack, onDone }) {
   const [tier, setTier] = useState("p0");
-  const [quizState, setQuizState] = useState({}); // {idx: 'revealed'}
-  const allRevealed = script.quiz.every((_, i) => quizState[i]);
+  const [prepRole, setPrepRole] = useState(initialRole || "A");
+  const [quizState, setQuizState] = useState({ A: {}, B: {} }); // {role: {idx: 'revealed'}}
+  useEffect(() => {
+    if (initialRole) setPrepRole(initialRole);
+  }, [initialRole]);
+
+  const role = script.roles[prepRole];
+  const rolePrep = script.rolePrep?.[prepRole] || {};
+  const quiz = rolePrep.quiz || script.quiz;
+  const allRevealed = quiz.every((_, i) => quizState[prepRole]?.[i]);
 
   return (
     <div className="space-y-4 ds-rise">
@@ -1281,22 +1332,64 @@ function PrepView({ script, done, onBack, onDone }) {
         </p>
       </Card>
 
-      {/* 两个角色（公开人设） */}
+      {/* 选择自己的备课路线 */}
+      <Card>
+        <div className="ds-display text-lg mb-1">选择你的角色</div>
+        <p className="text-xs mb-3" style={{ color: T.faint }}>
+          共同表达两人都要会；下面的升级句、词组和自测会完全按你此刻选择的角色切换。
+        </p>
+        <div className="grid sm:grid-cols-2 gap-2">
+          {["A", "B"].map((r) => {
+            const candidate = script.roles[r];
+            const active = prepRole === r;
+            return (
+              <button
+                key={r}
+                onClick={() => setPrepRole(r)}
+                className="text-left rounded-lg p-3"
+                style={{ background: active ? "#332b16" : T.ink, border: `1px solid ${active ? T.spot : T.line}` }}
+              >
+                <div className="flex items-baseline gap-2">
+                  <span className="ds-display text-lg" style={{ color: active ? T.spot : T.text }}>{candidate.name}</span>
+                  <span className="text-xs" style={{ color: T.faint }}>{candidate.title}</span>
+                </div>
+                <div className="text-xs mt-1" style={{ color: T.mut }}>{candidate.stance}</div>
+              </button>
+            );
+          })}
+        </div>
+      </Card>
+
+      {/* 当前角色的人设与任务方向 */}
+      <Card>
+        <div className="flex items-baseline gap-2">
+          <div className="ds-display text-lg">{role.name} 的备课路线</div>
+          <span className="text-xs" style={{ color: T.faint }}>{role.title}</span>
+        </div>
+        <p className="text-sm mt-2 leading-relaxed" style={{ color: T.mut }}>{role.persona}</p>
+        <p className="text-sm mt-1 leading-relaxed">{role.stance}</p>
+        <div className="rounded-lg mt-3 p-3" style={{ background: T.ink, border: `1px solid ${T.line}` }}>
+          <div className="text-xs" style={{ color: T.spot }}>你的私密主线（演出时才会揭晓具体任务）</div>
+          <div className="text-sm mt-1">你需要用语言推进自己的立场、试探对方，并完成角色专属目标。</div>
+        </div>
+      </Card>
+
+      {/* 两个角色的公开人设 */}
       <div className="grid sm:grid-cols-2 gap-3">
         {["A", "B"].map((r) => {
-          const role = script.roles[r];
+          const candidate = script.roles[r];
           return (
             <Card key={r}>
               <div className="flex items-baseline gap-2">
-                <span className="ds-display text-lg">{role.name}</span>
+                <span className="ds-display text-lg">{candidate.name}</span>
                 <span className="text-xs" style={{ color: T.faint }}>
-                  {role.title}
+                  {candidate.title}
                 </span>
               </div>
               <p className="text-sm mt-2 leading-relaxed" style={{ color: T.mut }}>
-                {role.persona}
+                {candidate.persona}
               </p>
-              <p className="text-sm mt-1 leading-relaxed">{role.stance}</p>
+              <p className="text-sm mt-1 leading-relaxed">{candidate.stance}</p>
               <p className="text-xs mt-2" style={{ color: T.spot }}>
                 🎭 含隐藏任务 ×2 — 进房选定角色后才会向你单独揭晓
               </p>
@@ -1330,24 +1423,19 @@ function PrepView({ script, done, onBack, onDone }) {
 
         {tier === "p0" && (
           <div className="space-y-2">
+            <div className="text-xs mb-1" style={{ color: T.faint }}>共同基础</div>
             {script.p0shared.map((e, i) => (
               <ExpRow key={i} en={e.en} zh={e.zh} />
             ))}
-            {["A", "B"].map((r) => (
-              <div key={r} className="pt-2">
-                <div className="text-xs mb-1" style={{ color: T.spot }}>
-                  {script.roles[r].name} 专属
-                </div>
-                {script.roles[r].p0.map((e, i) => (
-                  <ExpRow key={i} en={e.en} zh={e.zh} />
-                ))}
-              </div>
-            ))}
+            <div className="pt-2">
+              <div className="text-xs mb-1" style={{ color: T.spot }}>{role.name} 专属</div>
+              {role.p0.map((e, i) => <ExpRow key={i} en={e.en} zh={e.zh} />)}
+            </div>
           </div>
         )}
         {tier === "p1" && (
           <div className="space-y-3">
-            {script.p1.map((e, i) => (
+            {(rolePrep.p1 || script.p1).map((e, i) => (
               <div key={i} className="rounded-xl p-3" style={{ background: T.ink, border: `1px solid ${T.line}` }}>
                 <div className="text-sm line-through" style={{ color: T.faint }}>
                   {e.from}
@@ -1367,7 +1455,7 @@ function PrepView({ script, done, onBack, onDone }) {
         )}
         {(tier === "p2" || tier === "p3") && (
           <div className="space-y-2">
-            {script[tier].map((e, i) => (
+            {(rolePrep[tier] || script[tier]).map((e, i) => (
               <ExpRow key={i} en={e.en} zh={e.zh} />
             ))}
           </div>
@@ -1381,16 +1469,16 @@ function PrepView({ script, done, onBack, onDone }) {
           规则：看情境，<span style={{ color: T.spot }}>先大声说出你的版本</span>，再翻开参考表达对照。别跳过开口这一步。
         </p>
         <div className="space-y-3">
-          {script.quiz.map((q, i) => (
+          {quiz.map((q, i) => (
             <div key={i} className="rounded-xl p-3" style={{ background: T.ink, border: `1px solid ${T.line}` }}>
               <div className="text-sm">
                 {i + 1}. {q.situation}
               </div>
-              {!quizState[i] ? (
+              {!quizState[prepRole]?.[i] ? (
                 <button
                   className="text-xs mt-2 underline"
                   style={{ color: T.spot }}
-                  onClick={() => setQuizState((s) => ({ ...s, [i]: true }))}
+                  onClick={() => setQuizState((s) => ({ ...s, [prepRole]: { ...s[prepRole], [i]: true } }))}
                 >
                   我说完了，看参考表达
                 </button>
@@ -3415,16 +3503,15 @@ ROLE A: ${core.roles.A.name}, ${core.roles.A.stance}
 ROLE B: ${core.roles.B.name}, ${core.roles.B.stance}
 LANGUAGE GOALS: ${goals.join(", ") || "general conversation"}
 
-Build the expression pack. Requirements:
+Build two genuinely different role-based prep packs. Requirements:
 - p0shared: 5 must-use expressions both roles need in THIS scenario; short, natural, high-frequency.
 - roleP0: 2 role-specific must-use expressions each, tied to their stance.
-- p1: 4 upgrade pairs; "from" must be the typical direct-translation Chinglish a B1 speaker would actually say in this scenario, "to" the natural native version.
-- p2: 5 idiomatic collocations/softeners fitting the scenario.
-- p3: 3 advanced lines to merely recognize.
-- quiz: 4 speak-first self-tests; "situation" in Chinese describes a moment from THIS scenario; "reference" is the model answer; "tip" one Chinese line on why it works.
+- rolePrep: create separate A and B packs. Each has p1 (3 upgrade pairs), p2 (3 idiomatic collocations/softeners), p3 (2 advanced lines), and quiz (3 speak-first self-tests). Every item must serve THAT role's private goal, strategy, and likely lines — do not mirror the other role's pack.
+- "from" must be the typical direct-translation Chinglish a B1 speaker would actually say in that role's situation; "to" is the natural native version.
+- Each quiz "situation" is in Chinese and role-specific; "reference" is the model answer; "tip" is one Chinese line on why it works.
 All "zh"/"situation"/"tip" in Chinese; expressions in English.
 Respond ONLY with JSON, no markdown fences:
-{"p0shared":[{"en":"","zh":""}],"roleP0":{"A":[{"en":"","zh":""}],"B":[{"en":"","zh":""}]},"p1":[{"from":"","to":"","zh":""}],"p2":[{"en":"","zh":""}],"p3":[{"en":"","zh":""}],"quiz":[{"situation":"","reference":"","tip":""}]}`;
+{"p0shared":[{"en":"","zh":""}],"roleP0":{"A":[{"en":"","zh":""}],"B":[{"en":"","zh":""}]},"rolePrep":{"A":{"p1":[{"from":"","to":"","zh":""}],"p2":[{"en":"","zh":""}],"p3":[{"en":"","zh":""}],"quiz":[{"situation":"","reference":"","tip":""}]},"B":{"p1":[{"from":"","to":"","zh":""}],"p2":[{"en":"","zh":""}],"p3":[{"en":"","zh":""}],"quiz":[{"situation":"","reference":"","tip":""}]}}}`;
 }
 
 function assembleScript(core, lang) {
@@ -3448,6 +3535,7 @@ function assembleScript(core, lang) {
       B: { ...core.roles.B, p0: lang.roleP0?.B || [] },
     },
     p0shared: lang.p0shared || [],
+    rolePrep: lang.rolePrep || null,
     p1: lang.p1 || [],
     p2: lang.p2 || [],
     p3: lang.p3 || [],
