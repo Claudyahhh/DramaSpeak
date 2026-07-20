@@ -358,12 +358,12 @@ const SCRIPTS = [
     id: "last-flight",
     title: "最后一班夜航",
     en: "The Last Flight Confession",
-    genre: "悬疑谈判",
+    genre: "峰会危机",
     difficulty: 3,
     minutes: 25,
-    logline: "暴雨困住最后一班航班，一名危机公关和一名调查记者必须决定：真相今晚起飞，还是有人先坦白。",
-    world: "台风夜的海岛机场，唯一能离开的夜航延误两小时。贵宾休息室里，Maya 握着一段录音，Ethan 则被公司派来处理一场可能毁掉品牌的事故。",
-    relationship: "三年前有过短暂交集的陌生人。她掌握他的秘密，他却可能是唯一能保护她消息源的人。",
+    logline: "行业峰会散场后的暴雨困住最后一班航班，一名危机公关和一名调查记者必须决定：真相今晚起飞，还是有人先坦白。",
+    world: "国际航空科技峰会闭幕后，唯一能回总部的夜航延误两小时。贵宾休息室里，Maya 握着一段录音，Ethan 则被公司派来处理一场可能毁掉品牌的事故。",
+    relationship: "峰会上的专业对手，三年前有过短暂交集。她掌握他的秘密，他却可能是唯一能保护她消息源的人。",
     acts: [
       { t: "第一幕 · 困局", d: "登机口关闭。Maya 明示自己知道事故真相，Ethan 必须先弄清她会把故事写到什么程度。" },
       { t: "第二幕 · 录音", teaser: "一段录音把两人的旧事也一并扯了出来……" },
@@ -403,46 +403,46 @@ const SCRIPTS = [
     quiz: [{ situation: "你想争取一点时间，但不能直接说“别发”。", reference: "Would you consider holding it until we verify one more thing?", tip: "consider + holding it 是礼貌且有策略的请求。" }, { situation: "你要拒绝交出消息源。", reference: "I can't disclose that without compromising someone.", tip: "用后果解释边界，既坚定又专业。" }, { situation: "你想让对方给出实际条件。", reference: "What are you willing to put on the table?", tip: "谈判里用 put on the table 要求具体承诺。" }, { situation: "对话快失控了，拉回共同目标。", reference: "We are running out of time. Let's be precise about what happened.", tip: "先标明压力，再拉回事实。" }],
   },
   {
-    id: "plus-one",
-    title: "前任婚礼假情侣",
-    en: "The Plus-One Alibi",
-    genre: "浪漫喜剧",
+    id: "boardroom-alibi",
+    title: "董事会前夜",
+    en: "The Missing Signature",
+    genre: "高层博弈",
     difficulty: 2,
     minutes: 25,
-    logline: "婚礼现场，两个嘴硬的老同学临时假扮情侣；问题是，女方的前任正坐在主桌，男方也藏着一个不能说的真相。",
-    world: "巴厘岛海边婚礼的晚宴前，Nina 的前任带着新伴侣出现。她抓来刚落地的大学同学 Leo 救场，并承诺只演到第一支舞结束。",
-    relationship: "大学时互相嫌弃却很了解对方的老同学。多年未见，一见面就被迫扮成亲密爱侣。",
+    logline: "董事会前夜，一份收购协议少了关键签字。大区总监和首席法务必须判断：这是普通疏漏，还是有人正把所有人推向一个陷阱。",
+    world: "跨国收购案的董事会前二十分钟。会议室外，投资人和媒体已经到场；会议室内，一份最终协议多出了一页没人承认见过的附录。",
+    relationship: "共同熬过多个危机的业务负责人和首席法务。她知道他会为结果冒险，他知道她绝不会为风险背书。",
     acts: [
-      { t: "第一幕 · 认领", d: "在入场前的十分钟里对口供：怎么认识、在一起多久、谁先表白。每个细节都可能被拆穿。" },
-      { t: "第二幕 · 加戏", teaser: "前任带着问题过来，假戏必须临时加码……" },
-      { t: "第三幕 · 真话", teaser: "第一支舞快结束了，可两人都没有马上松手。" },
+      { t: "第一幕 · 缺席", d: "协议少了 Sophie 的签字。Daniel 要她先信任团队，Sophie 则要求先厘清这页附录来自哪里。" },
+      { t: "第二幕 · 附录", teaser: "一通来自 CEO 的电话，让 Daniel 的立场突然变得可疑……" },
+      { t: "第三幕 · 落笔", teaser: "董事会即将开门；签字、延期，还是带着真相走进去？" },
     ],
-    hook: "由 Nina 开场：拽住 Leo 的袖子，急促地说“帮我演十分钟，价钱你开”。",
+    hook: "由 Sophie 开场：把协议推到 Daniel 面前，说“这页不是我昨晚审过的版本”。",
     roles: {
       A: {
-        name: "Leo", gender: "男", title: "婚礼救场", persona: "男性，嘴贫镇定，临场反应很快，其实一直介意当年没告别。", stance: "答应配合到第一支舞结束，但想知道 Nina 当年为什么突然断联。", tasks: { main: { goal: "不直接问“你当年为什么消失”，让 Nina 主动说出当年断联的真实原因。", judge: "她给出一个明确原因，而不是只说“很复杂”。" }, bonus: { goal: "让她在别人面前主动补充一个关于你的优点。" } }, p0: [{ en: "Go with it — I have a plan.", zh: "配合我，我有办法。" }, { en: "That is not the version I remember.", zh: "这和我记得的版本可不一样。" }] },
+        name: "Daniel", gender: "男", title: "大区总监", persona: "男性，果断善谈，习惯在最后一刻替团队扛下结果。", stance: "想让收购案按时进入董事会，但知道 CEO 私下要求他接受一项风险条款。", tasks: { main: { goal: "不透露 CEO 的私下指令，让 Sophie 说出她愿意签字的具体条件。", judge: "她明确提出一项签字条件或可执行替代方案。" }, bonus: { goal: "让她承认你不是在单纯追求业绩。" } }, p0: [{ en: "Let's focus on what we can still control.", zh: "先聚焦我们还能够控制的事。" }, { en: "What would it take for you to sign off?", zh: "满足什么条件你才会签字？" }] },
       B: {
-        name: "Nina", gender: "女", title: "临时女友", persona: "女性，外表从容，内心好胜，越慌越会讲漂亮话。", stance: "要体面度过前任的婚礼，绝不能让人看出自己被刺痛；也不想再欠 Leo 人情。", tasks: { main: { goal: "让 Leo 至少一次主动把假情侣演得更真，而不是只机械配合。", judge: "他自发做出亲密举动或补充亲密细节。" }, bonus: { goal: "在不露馅的前提下，让前任问一句“你们是真的吗？”" } }, p0: [{ en: "For the record, this is strictly temporary.", zh: "先说好，这完全是临时的。" }, { en: "Can you please stop making this easy for him?", zh: "你能不能别让他那么好过？" }] },
+        name: "Sophie", gender: "女", title: "首席法务", persona: "女性，冷静锋利，习惯把最难的问题问到不能再含糊。", stance: "必须确认附录是否被人为加入；她不想毁掉交易，但不会让公司承担未知责任。", tasks: { main: { goal: "不直接指控 Daniel 知情，让他承认至少一条他没有告诉董事会的风险。", judge: "他明确说出一项未披露的风险或信息来源。" }, bonus: { goal: "让他主动请求你一起向董事会说明情况。" } }, p0: [{ en: "Walk me through the version history.", zh: "带我过一遍版本记录。" }, { en: "I need a defensible answer, not a reassuring one.", zh: "我要一个站得住的答案，不是安慰人的答案。" }] },
     },
-    p0shared: [{ en: "Play along.", zh: "配合我演。" }, { en: "Don't make this weird.", zh: "别把事情弄尴尬。" }, { en: "We need a better backstory.", zh: "我们得编个更像样的背景故事。" }, { en: "You owe me an explanation.", zh: "你欠我一个解释。" }, { en: "Just smile and follow my lead.", zh: "笑一下，跟着我来。" }],
-    p1: [{ from: "Pretend to be my boyfriend.", to: "Could you do me a huge favor and play along for ten minutes?", zh: "请求帮忙更自然。" }, { from: "Why did you disappear?", to: "What happened after you stopped answering my messages?", zh: "问旧事但不给人逼供感。" }, { from: "You are acting too much.", to: "You're making this performance dangerously convincing.", zh: "打趣式表达心动。" }, { from: "Don't leave me.", to: "Stay until the song ends. Then you can walk away.", zh: "克制地挽留。" }],
+    p0shared: [{ en: "Let's separate the facts from the assumptions.", zh: "先把事实和假设分开。" }, { en: "This needs to be on the record.", zh: "这件事需要留下正式记录。" }, { en: "What is the exposure here?", zh: "这里的风险敞口是什么？" }, { en: "I can't sign off on this as it stands.", zh: "按现在这样我不能签字。" }, { en: "We need a decision we can defend tomorrow.", zh: "我们要做一个明天也站得住的决定。" }],
+    p1: [{ from: "Please sign it.", to: "What would it take for you to sign off?", zh: "催签时改为询问条件。" }, { from: "Who changed this?", to: "Walk me through the version history.", zh: "追查修改来源的专业说法。" }, { from: "This is dangerous.", to: "I need a defensible answer on the exposure here.", zh: "把模糊担忧变成风险问题。" }, { from: "We must decide now.", to: "We need a decision we can defend tomorrow.", zh: "强调时效但不情绪化。" }],
     rolePrep: {
       A: {
-        p1: [{ from: "Why did you leave?", to: "What happened after you stopped answering my messages?", zh: "Leo 追问旧事，但不把对方逼进角落。" }, { from: "You are lying.", to: "That is not the version I remember.", zh: "用回忆制造张力，而不是直接拆穿。" }, { from: "I will help you.", to: "Go with it — I have a plan.", zh: "临场救场的自然说法。" }],
-        p2: [{ en: "sell the story", zh: "把说辞演得可信" }, { en: "call someone's bluff", zh: "戳穿某人的虚张声势" }, { en: "have a soft spot for", zh: "对某人心软" }],
-        p3: [{ en: "You always did know how to turn a crisis into an entrance.", zh: "你一直很会把危机变成登场。" }, { en: "I came for a wedding, not unfinished business.", zh: "我来参加婚礼，不是来处理旧账。" }],
-        quiz: [{ situation: "你想提醒她的说辞与你记得的不一样。", reference: "That is not the version I remember.", tip: "不直接说 lie，更有戏也更留余地。" }, { situation: "你要临时主导假情侣的剧情。", reference: "Go with it — I have a plan.", tip: "短促有力，适合高压救场。" }, { situation: "你想问断联原因。", reference: "What happened after you stopped answering my messages?", tip: "追问事实，而不是给对方贴标签。" }],
+        p1: [{ from: "Please sign it.", to: "What would it take for you to sign off?", zh: "Daniel 要问清签字条件，而不是施压。" }, { from: "We can solve it later.", to: "Let's focus on what we can still control before the board convenes.", zh: "在高压下收束讨论范围。" }, { from: "It is not a big risk.", to: "I understand the exposure, and I have a mitigation plan.", zh: "承认风险再给应对方案。" }],
+        p2: [{ en: "sign off on", zh: "批准、签字背书" }, { en: "mitigate the risk", zh: "降低风险" }, { en: "keep the deal on track", zh: "让交易保持推进" }],
+        p3: [{ en: "I'm not asking you to lower the bar; I'm asking you to define it.", zh: "我不是要你降低标准，而是请你明确标准。" }, { en: "If we delay this, the market will write the story for us.", zh: "如果延迟，市场会替我们写故事。" }],
+        quiz: [{ situation: "你想问她怎样才愿意签字。", reference: "What would it take for you to sign off?", tip: "先问条件，比直接催签更有谈判空间。" }, { situation: "你要让讨论回到会前还能处理的部分。", reference: "Let's focus on what we can still control before the board convenes.", tip: "用 control 把焦虑变成行动。" }, { situation: "你要承认风险，但不放弃交易。", reference: "I understand the exposure, and I have a mitigation plan.", tip: "风险承认加解决方案，可信度更高。" }],
       },
       B: {
-        p1: [{ from: "Act like my boyfriend.", to: "Could you do me a huge favor and play along for ten minutes?", zh: "Nina 的请求要紧急但不失礼。" }, { from: "Don't make me look bad.", to: "Can you please stop making this easy for him?", zh: "把难堪变成带刺的玩笑。" }, { from: "Don't leave me.", to: "Stay until the song ends. Then you can walk away.", zh: "用克制的方式挽留。" }],
-        p2: [{ en: "save face", zh: "保住面子" }, { en: "keep up appearances", zh: "维持表面体面" }, { en: "throw someone off", zh: "让人失去判断" }],
-        p3: [{ en: "For someone I haven't seen in years, you're remarkably hard to ignore.", zh: "对一个多年未见的人来说，你实在很难让人忽略。" }, { en: "Don't confuse a good performance with a bad idea.", zh: "别把演得好误当成这是个好主意。" }],
-        quiz: [{ situation: "你要请 Leo 临时救场。", reference: "Could you do me a huge favor and play along for ten minutes?", tip: "huge favor 表示这真是一个不小的人情。" }, { situation: "你想讽刺他太配合，害前任显得轻松。", reference: "Can you please stop making this easy for him?", tip: "用玩笑表达复杂情绪，不会太直白。" }, { situation: "第一支舞快结束，你想留住他。", reference: "Stay until the song ends. Then you can walk away.", tip: "留白让情绪更有张力。" }],
+        p1: [{ from: "Who changed this?", to: "Walk me through the version history.", zh: "Sophie 追查来源时先要证据链。" }, { from: "This is dangerous.", to: "I need a defensible answer on the exposure here.", zh: "把情绪判断转换成合规问题。" }, { from: "I won't sign.", to: "I can't sign off on this as it stands.", zh: "拒绝要留下条件和余地。" }],
+        p2: [{ en: "a material risk", zh: "重大风险" }, { en: "paper trail", zh: "书面记录链" }, { en: "go on the record", zh: "留下正式记录" }],
+        p3: [{ en: "A rushed signature is still a signature we have to live with.", zh: "仓促的签字，仍是我们必须承担的签字。" }, { en: "I won't confuse commercial pressure with informed consent.", zh: "我不会把商业压力混同于知情同意。" }],
+        quiz: [{ situation: "你想让对方展示协议的修改记录。", reference: "Walk me through the version history.", tip: "专业、直接，适合核查文件。" }, { situation: "你要追问风险影响。", reference: "I need a defensible answer on the exposure here.", tip: "defensible 表示能经得起董事会追问。" }, { situation: "你要拒绝当前版本，但不直接堵死。", reference: "I can't sign off on this as it stands.", tip: "as it stands 表示“按目前的样子”。" }],
       },
     },
-    p2: [{ en: "save face", zh: "保住面子" }, { en: "sell the story", zh: "把说辞演得可信" }, { en: "throw someone off", zh: "让人失去判断" }, { en: "have a soft spot for", zh: "对某人心软" }, { en: "keep up appearances", zh: "维持表面体面" }],
-    p3: [{ en: "We are one question away from a complete disaster.", zh: "我们离彻底穿帮只差一个问题。" }, { en: "I forgot how dangerous you are when you're cornered.", zh: "我忘了你被逼急时有多危险。" }, { en: "Maybe the act is only obvious to us.", zh: "也许只有我们觉得这是演的。" }],
-    quiz: [{ situation: "你想请对方临时扮演情侣。", reference: "Could you do me a huge favor and play along for ten minutes?", tip: "play along 比 pretend 更口语、更自然。" }, { situation: "提醒对方别把亲密戏演得太过。", reference: "You're making this performance dangerously convincing.", tip: "用玩笑表达紧张感，戏会更好玩。" }, { situation: "你要追问断联的事。", reference: "What happened after you stopped answering my messages?", tip: "聚焦事件，避免直接指责。" }, { situation: "舞快结束，你还不想对方离开。", reference: "Stay until the song ends. Then you can walk away.", tip: "短句留白，比直接挽留更有戏。" }],
+    p2: [{ en: "sign off on", zh: "批准、签字背书" }, { en: "a material risk", zh: "重大风险" }, { en: "paper trail", zh: "书面记录链" }, { en: "mitigate the risk", zh: "降低风险" }, { en: "keep the deal on track", zh: "让交易保持推进" }],
+    p3: [{ en: "A rushed signature is still a signature we have to live with.", zh: "仓促的签字，仍是我们必须承担的签字。" }, { en: "I'm not asking you to lower the bar; I'm asking you to define it.", zh: "我不是要你降低标准，而是请你明确标准。" }, { en: "We need a decision we can defend tomorrow.", zh: "我们要做一个明天也站得住的决定。" }],
+    quiz: [{ situation: "你想询问对方愿意签字的条件。", reference: "What would it take for you to sign off?", tip: "先问条件，比直接催签更有谈判空间。" }, { situation: "你要追查协议修改的来源。", reference: "Walk me through the version history.", tip: "用版本记录要求建立证据链。" }, { situation: "你要拒绝当前版本，但不直接堵死。", reference: "I can't sign off on this as it stands.", tip: "as it stands 表示“按目前的样子”。" }, { situation: "你想把讨论拉回可执行的决定。", reference: "We need a decision we can defend tomorrow.", tip: "强调可辩护性，很适合高层决策。" }],
   },
   {
     id: "missing-demo",
@@ -3439,7 +3439,7 @@ export const __TEST__ = { containsPhrase, phraseTokens, normWords, countFillers,
 
 /* ================= M6 · AI 剧本生成 + 共创向导 ================= */
 
-const GENRE_TAGS = ["职场", "谈判", "悬疑", "喜剧", "科幻", "伦理", "生活", "旅行"];
+const GENRE_TAGS = ["职场", "谈判", "悬疑", "危机", "高管", "客户", "峰会", "商务社交"];
 const LANG_GOALS = ["委婉拒绝", "谈判与让步", "讲一个完整的故事", "打断与接话", "闲聊破冰", "观点论证", "提问与试探", "情绪表达"];
 const SPICE = [
   { key: "mild", label: "🌱 温和", desc: "常规目标，稳稳练习" },
@@ -3456,10 +3456,12 @@ function buildConceptsPrompt(mode, seed, genres, avoid) {
       : `Story seed: ${seed}`;
   return `You are a playwright designing playful, theatre-first, two-person English roleplay scenarios for Chinese B1-B2 learners. Each scenario is a roughly 25-minute mini drama with exactly one male protagonist and one female protagonist. The two players must WIN THROUGH TALKING — every concept needs verbal tension (information gaps, conflicting interests, time pressure, or secrets), a reveal or reversal, and a satisfying ending.
 
+SETTING BOUNDARY (non-negotiable): Every scenario must happen in a real workplace or formal professional-social setting: office, client meeting, boardroom, industry conference, business dinner, investor meeting, trade-show backstage, or business travel. The drama must be plausible in a professional context and teach useful workplace/formal-social English. Do not use romance, weddings, school, casual friendship hangouts, family drama, or purely daily-life settings.
+
 ${src}
 ${avoid ? `Must be clearly different from these previous concepts: ${avoid}` : ""}
 
-Give exactly 3 distinct story concepts. Make titles memorable, playful, and specific; avoid generic workplace debates or plain daily-life scenes. Make the roles' gender unambiguous from their names and identities. All text in Chinese except character names.
+Give exactly 3 distinct story concepts. Make titles memorable, playful, and specific; avoid generic workplace debates. Make the roles' gender unambiguous from their names and professional identities. All text in Chinese except character names.
 Respond ONLY with JSON, no markdown fences:
 {"concepts":[{"title":"中文剧名(2-6字)","tagline":"一句话钩子(≤25字)","conflict":"核心冲突(≤30字)","roles":[{"name":"英文名","title":"中文身份(≤8字)"},{"name":"英文名","title":"中文身份(≤8字)"}]}]}`;
 }
@@ -3481,6 +3483,8 @@ DRAMA FORMAT (critical):
 - Exactly two protagonists: Role A is male and Role B is female. Make their genders unmistakable through names, identities, and persona wording.
 - Give the story a vivid premise, a twist/reversal, and a finale with a real choice. It should feel fun to perform, not like an English textbook debate.
 - Use a memorable, specific title; avoid generic titles such as "The Debate" or "A Meeting".
+- The setting MUST be a real workplace or formal professional-social setting: office, client meeting, boardroom, industry conference, business dinner, investor meeting, trade-show backstage, or business travel. The language must be useful for work or formal networking.
+- Do not use romance, weddings, school, casual friendship hangouts, family drama, or purely daily-life settings.
 
 HIDDEN TASK RULES (critical):
 - Each role gets 1 main task + 1 bonus task, secret from the other player.
