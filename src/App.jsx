@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 
 /* ============================================================
-   Duo Stage · 结对英语陪练 — Milestone 2
+   AI Drama · 职场英语剧本杀 — Milestone 2
    M1: 骨架 + 房间 + 双人同步 + 试音台
    M2: 预置剧本库 + 备课卡(P0-P3+自测) + 选剧本/选角色/隐藏任务
    M3: 对话舞台 — 双人字幕互见 + P0点亮 + SOS提词 + 落幕
@@ -990,9 +990,9 @@ function Shell({ children }) {
       <div className="max-w-2xl mx-auto px-4 py-6 sm:py-10">
         <header className="flex items-baseline justify-between mb-8">
           <div>
-            <div className="ds-display text-2xl sm:text-3xl">Duo&nbsp;Stage</div>
+            <div className="ds-display text-2xl sm:text-3xl">AI&nbsp;Drama</div>
             <div className="text-xs mt-1 tracking-wide" style={{ color: T.faint }}>
-              两个人的英语小剧场 · v1.0
+              剧本杀疯狂之夜 · 职场英语双人局
             </div>
           </div>
           <SpotMark />

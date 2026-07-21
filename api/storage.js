@@ -1,4 +1,4 @@
-const namespace = process.env.STORAGE_NAMESPACE || "duo-stage";
+const namespace = process.env.STORAGE_NAMESPACE || "ai-drama";
 
 const json = (res, status, body) => res.status(status).json(body);
 
