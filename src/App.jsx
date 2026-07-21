@@ -743,11 +743,12 @@ const MODEL_PROVIDERS = {
   },
   anthropic: {
     label: "Claude",
-    defaultModel: "claude-sonnet-4-20250514",
+    defaultModel: "claude-sonnet-5",
     models: [
-      { id: "claude-sonnet-4-20250514", label: "Claude Sonnet 4（推荐）" },
-      { id: "claude-opus-4-1-20250805", label: "Claude Opus 4.1" },
-      { id: "claude-3-5-haiku-20241022", label: "Claude Haiku 3.5" },
+      { id: "claude-fable-5", label: "Claude Fable 5（最高能力）" },
+      { id: "claude-sonnet-5", label: "Claude Sonnet 5（推荐）" },
+      { id: "claude-opus-4-8", label: "Claude Opus 4.8" },
+      { id: "claude-haiku-4-5", label: "Claude Haiku 4.5（快速）" },
     ],
   },
   deepseek: {
@@ -803,11 +804,12 @@ const MODEL_PROVIDERS = {
   },
   "openai-compatible": {
     label: "OpenAI",
-    defaultModel: "gpt-5.2",
+    defaultModel: "gpt-5.6-terra",
     models: [
-      { id: "gpt-5.2", label: "GPT-5.2（推荐）" },
-      { id: "gpt-5-mini", label: "GPT-5 mini" },
-      { id: "gpt-4.1-mini", label: "GPT-4.1 mini" },
+      { id: "gpt-5.6-sol", label: "GPT-5.6 Sol（最高能力）" },
+      { id: "gpt-5.6-terra", label: "GPT-5.6 Terra（推荐）" },
+      { id: "gpt-5.6-luna", label: "GPT-5.6 Luna（快速）" },
+      { id: "gpt-5.2", label: "GPT-5.2（兼容）" },
     ],
   },
 };

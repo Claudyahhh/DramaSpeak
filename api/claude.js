@@ -248,10 +248,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    const text =
-      provider === "anthropic"
-        ? await callAnthropic(prompt, runtime)
-        : await callOpenAICompatible(prompt, runtime);
+    let text;
+    if (provider === "anthropic") {
+      text = await callAnthropic(prompt, runtime);
+    } else if (shouldUseOpenAIResponses(runtime)) {
+      text = await callOpenAIResponses(prompt, runtime);
+    } else {
+      text = await callOpenAICompatible(prompt, runtime);
+    }
 
     return res.status(200).json({ text, provider, configured: true });
   } catch (error) {
@@ -283,7 +287,7 @@ function resolveRuntime(clientConfig) {
     return {
       provider,
       apiKey: process.env.ANTHROPIC_API_KEY || process.env.TEXT_API_KEY,
-      model: process.env.ANTHROPIC_MODEL || process.env.TEXT_MODEL || "claude-sonnet-4-20250514",
+      model: process.env.ANTHROPIC_MODEL || process.env.TEXT_MODEL || "claude-sonnet-5",
       label: "Claude",
     };
   }
@@ -303,7 +307,7 @@ function resolveRuntime(clientConfig) {
     provider: "openai-compatible",
     apiKey: process.env.TEXT_API_KEY,
     baseUrl: process.env.TEXT_BASE_URL || "https://api.openai.com/v1",
-    model: process.env.TEXT_MODEL || "gpt-4o-mini",
+    model: process.env.TEXT_MODEL || "gpt-5.6-terra",
     label: "OpenAI-compatible",
   };
 }
@@ -360,6 +364,43 @@ async function callAnthropic(prompt, { apiKey, model }) {
     .filter((block) => block.type === "text")
     .map((block) => block.text)
     .join("\n");
+}
+
+function shouldUseOpenAIResponses({ baseUrl, model }) {
+  return baseUrl === "https://api.openai.com/v1" && /^gpt-5\.6(?:-|$)/.test(model);
+}
+
+async function callOpenAIResponses(prompt, { apiKey, baseUrl, model, label }) {
+  if (!apiKey) throw new Error(`Missing API key for ${label}`);
+  if (!baseUrl) throw new Error(`Missing base URL for ${label}`);
+  if (!model) throw new Error(`Missing model for ${label}`);
+
+  const endpoint = `${baseUrl.replace(/\/$/, "")}/responses`;
+  const modelRes = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      input: prompt,
+      max_output_tokens: Number(process.env.TEXT_MAX_TOKENS || 1200),
+    }),
+  });
+
+  if (!modelRes.ok) throw new Error(`${label} request failed (${modelRes.status})`);
+
+  const data = await modelRes.json();
+  const text =
+    data.output_text ||
+    (data.output || [])
+      .flatMap((item) => item.content || [])
+      .filter((content) => content.type === "output_text")
+      .map((content) => content.text)
+      .join("\n");
+  if (!text) throw new Error(`${label} response did not include text`);
+  return text;
 }
 
 async function callOpenAICompatible(prompt, { apiKey, baseUrl, model, label }) {
