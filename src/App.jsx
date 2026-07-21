@@ -588,11 +588,84 @@ function containsPhrase(textWords, tokens, maxGap = 2) {
 const MODEL_CONFIG_SESSION_KEY = "dramaspeak:model-config:session";
 const MODEL_CONFIG_PERSIST_KEY = "dramaspeak:model-config:remembered";
 const MODEL_PROVIDERS = {
-  glm: { label: "GLM（智谱）", defaultModel: "glm-5.2" },
-  anthropic: { label: "Claude（Anthropic）", defaultModel: "claude-sonnet-4-20250514" },
-  deepseek: { label: "DeepSeek", defaultModel: "deepseek-chat" },
-  qwen: { label: "通义千问", defaultModel: "qwen-plus" },
-  "openai-compatible": { label: "OpenAI", defaultModel: "gpt-4o-mini" },
+  glm: {
+    label: "GLM（智谱）",
+    defaultModel: "glm-5.2",
+    models: [
+      { id: "glm-5.2", label: "GLM-5.2（推荐）" },
+      { id: "glm-5", label: "GLM-5" },
+      { id: "glm-4.7", label: "GLM-4.7" },
+    ],
+  },
+  anthropic: {
+    label: "Claude",
+    defaultModel: "claude-sonnet-4-20250514",
+    models: [
+      { id: "claude-sonnet-4-20250514", label: "Claude Sonnet 4（推荐）" },
+      { id: "claude-opus-4-1-20250805", label: "Claude Opus 4.1" },
+      { id: "claude-3-5-haiku-20241022", label: "Claude Haiku 3.5" },
+    ],
+  },
+  deepseek: {
+    label: "DeepSeek",
+    defaultModel: "deepseek-v4-flash",
+    models: [
+      { id: "deepseek-v4-flash", label: "DeepSeek V4 Flash（推荐）" },
+      { id: "deepseek-v4-pro", label: "DeepSeek V4 Pro" },
+    ],
+  },
+  qwen: {
+    label: "通义千问",
+    defaultModel: "qwen3.7-plus",
+    models: [
+      { id: "qwen3.7-plus", label: "Qwen 3.7 Plus（推荐）" },
+      { id: "qwen3.5-plus", label: "Qwen 3.5 Plus" },
+      { id: "qwen3.5-flash", label: "Qwen 3.5 Flash" },
+    ],
+  },
+  kimi: {
+    label: "Kimi",
+    defaultModel: "kimi-k2.5",
+    models: [
+      { id: "kimi-k2.5", label: "Kimi K2.5（推荐）" },
+      { id: "moonshot-v1-128k", label: "Moonshot V1 128K" },
+      { id: "moonshot-v1-32k", label: "Moonshot V1 32K" },
+    ],
+  },
+  doubao: {
+    label: "豆包",
+    defaultModel: "doubao-seed-2-0-lite-260215",
+    models: [
+      { id: "doubao-seed-2-0-lite-260215", label: "Doubao Seed 2.0 Lite（推荐）" },
+      { id: "doubao-seed-2-0-pro-260215", label: "Doubao Seed 2.0 Pro" },
+    ],
+  },
+  gemini: {
+    label: "Gemini",
+    defaultModel: "gemini-3.5-flash",
+    models: [
+      { id: "gemini-3.5-flash", label: "Gemini 3.5 Flash（推荐）" },
+      { id: "gemini-3.1-flash-lite", label: "Gemini 3.1 Flash-Lite" },
+      { id: "gemini-3.1-pro-preview", label: "Gemini 3.1 Pro Preview" },
+    ],
+  },
+  grok: {
+    label: "Grok",
+    defaultModel: "grok-4.5",
+    models: [
+      { id: "grok-4.5", label: "Grok 4.5（推荐）" },
+      { id: "grok-4.3", label: "Grok 4.3" },
+    ],
+  },
+  "openai-compatible": {
+    label: "OpenAI",
+    defaultModel: "gpt-5.2",
+    models: [
+      { id: "gpt-5.2", label: "GPT-5.2（推荐）" },
+      { id: "gpt-5-mini", label: "GPT-5 mini" },
+      { id: "gpt-4.1-mini", label: "GPT-4.1 mini" },
+    ],
+  },
 };
 
 const emptyModelConfig = {
@@ -605,10 +678,15 @@ const emptyModelConfig = {
 
 function normalizeModelConfig(value) {
   const provider = MODEL_PROVIDERS[value?.provider] ? value.provider : "glm";
+  const providerConfig = MODEL_PROVIDERS[provider];
+  const requestedModel = String(value?.model || "").trim();
+  const model = providerConfig.models.some((option) => option.id === requestedModel)
+    ? requestedModel
+    : providerConfig.defaultModel;
   return {
     enabled: Boolean(value?.enabled),
     provider,
-    model: String(value?.model || MODEL_PROVIDERS[provider].defaultModel).trim().slice(0, 128),
+    model,
     apiKey: String(value?.apiKey || "").trim().slice(0, 512),
     remember: Boolean(value?.remember),
   };
@@ -645,11 +723,11 @@ function getRequestModelConfig() {
 }
 
 // ---------- 模型 API（SOS、教练、动态剧情等） ----------
-async function callClaude(prompt) {
+async function callClaude(prompt, { allowFallback = true } = {}) {
   const res = await fetch("/api/text", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt, config: getRequestModelConfig() }),
+    body: JSON.stringify({ prompt, config: getRequestModelConfig(), allowFallback }),
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || "Model request failed");
@@ -1373,15 +1451,19 @@ function ModelSettings({ config, onChange, showToast }) {
           </div>
 
           <label className="block text-xs" style={{ color: T.faint }}>
-            模型名称
-            <input
+            选择模型
+            <select
               value={config.model}
               onChange={(e) => update({ model: e.target.value })}
-              placeholder="例如 glm-5.2"
-              maxLength={128}
               className="mt-1 w-full rounded-lg px-3 py-2.5 text-sm outline-none"
               style={{ background: T.ink, border: `1px solid ${T.line}`, color: T.text }}
-            />
+            >
+              {MODEL_PROVIDERS[config.provider].models.map((model) => (
+                <option key={model.id} value={model.id}>
+                  {model.label}
+                </option>
+              ))}
+            </select>
           </label>
 
           <label className="block text-xs" style={{ color: T.faint }}>
@@ -2160,6 +2242,23 @@ function Stage({ room, meta, scripts, roomState, profile, members, onUpdateMe, o
   const [myLines, setMyLines] = useState([]);
   const [partnerLines, setPartnerLines] = useState([]);
   const [interim, setInterim] = useState("");
+  const [translationOn, setTranslationOn] = useState(() => {
+    try {
+      return window.localStorage.getItem("dramaspeak:live-translation") === "on";
+    } catch {
+      return false;
+    }
+  });
+  const [translations, setTranslations] = useState({});
+  const [translationError, setTranslationError] = useState("");
+  const [translationRetry, setTranslationRetry] = useState(0);
+  const translationsRef = useRef({});
+  const translatingRef = useRef(new Set());
+  const translationFailedRef = useRef(new Set());
+  const translationQueueRef = useRef([]);
+  const translationRunningRef = useRef(false);
+  const translationOnRef = useRef(translationOn);
+  translationOnRef.current = translationOn;
   const myLinesRef = useRef([]);
   const scrollRef = useRef(null);
 
@@ -2368,6 +2467,74 @@ function Stage({ room, meta, scripts, roomState, profile, members, onUpdateMe, o
     ...partnerLines.map((l) => ({ ...l, mine: false })),
   ].sort((a, b) => a.ts - b.ts);
   const merged = mergedAll.filter((l) => (l.act || 0) === actIndex);
+  const translationKey = (line) =>
+    `${line.mine ? profile.id : partner?.userId || "partner"}:${line.ts}`;
+
+  const drainTranslationQueue = async () => {
+    if (translationRunningRef.current) return;
+    translationRunningRef.current = true;
+    while (translationOnRef.current && translationQueueRef.current.length) {
+      const { line, key } = translationQueueRef.current.shift();
+      try {
+        const raw = await callClaude(
+          `Translate this spoken workplace English into concise, natural Simplified Chinese. Preserve the speaker's tone and intent. Do not explain or answer the sentence. Respond ONLY as JSON: {"translation":"中文翻译"}\n\nEnglish utterance: ${JSON.stringify(line.text)}`,
+          { allowFallback: false }
+        );
+        const parsed = parseJSONLoose(raw);
+        const translated = String(parsed?.translation || raw || "").trim().slice(0, 500);
+        if (!translated) throw new Error("Empty translation");
+        setTranslations((current) => {
+          const next = { ...current, [key]: translated };
+          translationsRef.current = next;
+          return next;
+        });
+      } catch {
+        translationFailedRef.current.add(key);
+        setTranslationError("翻译暂不可用，请检查首页的模型配置");
+      } finally {
+        translatingRef.current.delete(key);
+        setTranslations((current) => ({ ...current }));
+      }
+    }
+    translationRunningRef.current = false;
+    if (translationOnRef.current && translationQueueRef.current.length) {
+      drainTranslationQueue();
+    }
+  };
+
+  // 翻译只保存在当前浏览器，不写入房间；队列逐句处理，避免同时打爆模型接口。
+  useEffect(() => {
+    if (!translationOn) return;
+    const pending = merged.filter((line) => {
+      const key = translationKey(line);
+      return (
+        line.text &&
+        !translationsRef.current[key] &&
+        !translatingRef.current.has(key) &&
+        !translationFailedRef.current.has(key)
+      );
+    });
+    if (pending.length) {
+      pending.forEach((line) => {
+        const key = translationKey(line);
+        translatingRef.current.add(key);
+        translationQueueRef.current.push({ line, key });
+      });
+      setTranslations((current) => ({ ...current }));
+    }
+    drainTranslationQueue();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [translationOn, translationRetry, myLines, partnerLines, actIndex, profile.id, partner?.userId]);
+
+  const toggleTranslation = () => {
+    const next = !translationOn;
+    translationFailedRef.current.clear();
+    setTranslationOn(next);
+    setTranslationError("");
+    try {
+      window.localStorage.setItem("dramaspeak:live-translation", next ? "on" : "off");
+    } catch {}
+  };
 
   // 供 AI 用的、按角色名标注的某一幕对话文本
   const nameOf = (mine) =>
@@ -2539,42 +2706,99 @@ Respond ONLY with JSON, no markdown fences: {"hints":[{"type":"word|stem|directi
       </Card>
 
       {/* 字幕区 */}
-      <div
-        ref={scrollRef}
-        className="rounded-2xl p-4 h-72 sm:h-80 overflow-y-auto space-y-2"
-        style={{ background: T.ink2, border: `1px solid ${T.line}` }}
-      >
-        {merged.length === 0 && !interim && (
-          <div className="text-sm text-center mt-16" style={{ color: T.faint }}>
-            开口吧——你们的台词会实时出现在这里
-            <div className="text-xs mt-1">（声音走微信语音，这里只做字幕）</div>
+      <div className="rounded-2xl overflow-hidden" style={{ background: T.ink2, border: `1px solid ${T.line}` }}>
+        <div
+          className="flex items-center justify-between gap-3 px-4 py-3"
+          style={{ borderBottom: `1px solid ${T.line}` }}
+        >
+          <div className="min-w-0">
+            <div className="text-sm font-medium">实时字幕</div>
+            {translationError && translationOn && (
+              <button
+                className="text-xs mt-0.5 underline text-left"
+                style={{ color: T.coral }}
+                onClick={() => {
+                  translationFailedRef.current.clear();
+                  setTranslationError("");
+                  setTranslationRetry((value) => value + 1);
+                }}
+              >
+                {translationError} · 重试
+              </button>
+            )}
           </div>
-        )}
-        {merged.map((l, i) => (
-          <div key={i} className={`flex ${l.mine ? "justify-end" : "justify-start"}`}>
-            <div
-              className="max-w-[85%] rounded-xl px-3 py-2 text-sm leading-relaxed"
-              style={{
-                background: l.mine ? "rgba(233,180,76,0.13)" : T.panel,
-                border: `1px solid ${l.mine ? "rgba(233,180,76,0.4)" : T.line}`,
-              }}
+          <button
+            type="button"
+            role="switch"
+            aria-checked={translationOn}
+            onClick={toggleTranslation}
+            className="flex items-center gap-2 text-xs flex-shrink-0"
+            style={{ color: translationOn ? T.spot : T.mut }}
+          >
+            中文翻译
+            <span
+              className="relative inline-flex w-9 h-5 rounded-full transition-colors"
+              style={{ background: translationOn ? T.spot : T.line }}
             >
-              {l.text}
-              {l.manual && (
-                <span className="text-xs ml-1" style={{ color: T.faint }}>
-                  ✎
-                </span>
-              )}
+              <span
+                className="absolute top-0.5 w-4 h-4 rounded-full transition-all"
+                style={{
+                  left: translationOn ? 18 : 2,
+                  background: translationOn ? T.ink : T.mut,
+                }}
+              />
+            </span>
+          </button>
+        </div>
+
+        <div ref={scrollRef} className="p-4 h-64 sm:h-72 overflow-y-auto space-y-2">
+          {merged.length === 0 && !interim && (
+            <div className="text-sm text-center mt-14" style={{ color: T.faint }}>
+              开口吧——你们的台词会实时出现在这里
+              <div className="text-xs mt-1">（声音走微信语音，这里只做字幕）</div>
             </div>
-          </div>
-        ))}
-        {interim && (
-          <div className="flex justify-end">
-            <div className="max-w-[85%] rounded-xl px-3 py-2 text-sm" style={{ color: T.faint }}>
-              {interim}…
+          )}
+          {merged.map((line, index) => {
+            const key = translationKey(line);
+            const translated = translations[key];
+            const translating = translatingRef.current.has(key);
+            return (
+              <div key={index} className={`flex ${line.mine ? "justify-end" : "justify-start"}`}>
+                <div
+                  className="max-w-[85%] rounded-xl px-3 py-2 text-sm leading-relaxed"
+                  style={{
+                    background: line.mine ? "rgba(233,180,76,0.13)" : T.panel,
+                    border: `1px solid ${line.mine ? "rgba(233,180,76,0.4)" : T.line}`,
+                  }}
+                >
+                  <div>
+                    {line.text}
+                    {line.manual && (
+                      <span className="text-xs ml-1" style={{ color: T.faint }}>
+                        ✎
+                      </span>
+                    )}
+                  </div>
+                  {translationOn && (translated || translating) && (
+                    <div
+                      className="text-xs mt-1.5 pt-1.5 leading-relaxed"
+                      style={{ color: translated ? T.mut : T.faint, borderTop: `1px solid ${T.line}` }}
+                    >
+                      {translated || "翻译中…"}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+          {interim && (
+            <div className="flex justify-end">
+              <div className="max-w-[85%] rounded-xl px-3 py-2 text-sm" style={{ color: T.faint }}>
+                {interim}…
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {micErr && <Notice tone="err">{micErr}</Notice>}

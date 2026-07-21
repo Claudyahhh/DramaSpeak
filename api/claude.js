@@ -241,6 +241,9 @@ export default async function handler(req, res) {
   const provider = runtime?.provider;
 
   if (!runtime) {
+    if (allowFallback === false) {
+      return res.status(400).json({ error: "请先配置可用的大模型 API key。" });
+    }
     return res.status(200).json({ text: fallback(prompt), provider: "fallback", demo: true });
   }
 
@@ -315,6 +318,10 @@ function normalizeClientConfig(value) {
     glm: { baseUrl: "https://open.bigmodel.cn/api/paas/v4", label: "GLM" },
     deepseek: { baseUrl: "https://api.deepseek.com/v1", label: "DeepSeek" },
     qwen: { baseUrl: "https://dashscope.aliyuncs.com/compatible-mode/v1", label: "Qwen" },
+    kimi: { baseUrl: "https://api.moonshot.cn/v1", label: "Kimi" },
+    doubao: { baseUrl: "https://ark.cn-beijing.volces.com/api/v3", label: "Doubao" },
+    gemini: { baseUrl: "https://generativelanguage.googleapis.com/v1beta/openai", label: "Gemini" },
+    grok: { baseUrl: "https://api.x.ai/v1", label: "Grok" },
     "openai-compatible": { baseUrl: "https://api.openai.com/v1", label: "OpenAI" },
   };
   if (provider === "anthropic") return { provider, apiKey, model, label: "Claude" };
