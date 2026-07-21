@@ -289,10 +289,11 @@ function resolveRuntime(clientConfig) {
   }
 
   if (provider === "glm") {
+    const apiKey = process.env.GLM_API_KEY || process.env.TEXT_API_KEY;
     return {
       provider,
-      apiKey: process.env.GLM_API_KEY || process.env.TEXT_API_KEY,
-      baseUrl: process.env.GLM_BASE_URL || "https://open.bigmodel.cn/api/paas/v4",
+      apiKey,
+      baseUrl: process.env.GLM_BASE_URL || getGlmBaseUrl(apiKey),
       model: process.env.GLM_MODEL || process.env.TEXT_MODEL || "glm-5.2",
       label: "GLM",
     };
@@ -315,7 +316,7 @@ function normalizeClientConfig(value) {
   if (!apiKey || apiKey.length > 512 || !model || model.length > 128) return null;
 
   const presets = {
-    glm: { baseUrl: "https://open.bigmodel.cn/api/paas/v4", label: "GLM" },
+    glm: { baseUrl: getGlmBaseUrl(apiKey), label: "GLM" },
     deepseek: { baseUrl: "https://api.deepseek.com/v1", label: "DeepSeek" },
     qwen: { baseUrl: "https://dashscope.aliyuncs.com/compatible-mode/v1", label: "Qwen" },
     kimi: { baseUrl: "https://api.moonshot.cn/v1", label: "Kimi" },
@@ -327,6 +328,12 @@ function normalizeClientConfig(value) {
   if (provider === "anthropic") return { provider, apiKey, model, label: "Claude" };
   if (!presets[provider]) return null;
   return { provider, apiKey, model, ...presets[provider] };
+}
+
+function getGlmBaseUrl(apiKey = "") {
+  return String(apiKey).startsWith("sk-code")
+    ? "https://open.bigmodel.cn/api/coding/paas/v4"
+    : "https://open.bigmodel.cn/api/paas/v4";
 }
 
 async function callAnthropic(prompt, { apiKey, model }) {
