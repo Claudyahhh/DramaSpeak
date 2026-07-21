@@ -584,15 +584,75 @@ function containsPhrase(textWords, tokens, maxGap = 2) {
   return false;
 }
 
-// ---------- Claude API（SOS 提词等） ----------
+// ---------- 模型配置（仅保存在当前设备，不写入房间或共享存储） ----------
+const MODEL_CONFIG_SESSION_KEY = "dramaspeak:model-config:session";
+const MODEL_CONFIG_PERSIST_KEY = "dramaspeak:model-config:remembered";
+const MODEL_PROVIDERS = {
+  glm: { label: "GLM（智谱）", defaultModel: "glm-5.2" },
+  anthropic: { label: "Claude（Anthropic）", defaultModel: "claude-sonnet-4-20250514" },
+  deepseek: { label: "DeepSeek", defaultModel: "deepseek-chat" },
+  qwen: { label: "通义千问", defaultModel: "qwen-plus" },
+  "openai-compatible": { label: "OpenAI", defaultModel: "gpt-4o-mini" },
+};
+
+const emptyModelConfig = {
+  enabled: false,
+  provider: "glm",
+  model: MODEL_PROVIDERS.glm.defaultModel,
+  apiKey: "",
+  remember: false,
+};
+
+function normalizeModelConfig(value) {
+  const provider = MODEL_PROVIDERS[value?.provider] ? value.provider : "glm";
+  return {
+    enabled: Boolean(value?.enabled),
+    provider,
+    model: String(value?.model || MODEL_PROVIDERS[provider].defaultModel).trim().slice(0, 128),
+    apiKey: String(value?.apiKey || "").trim().slice(0, 512),
+    remember: Boolean(value?.remember),
+  };
+}
+
+function loadModelConfig() {
+  if (typeof window === "undefined") return emptyModelConfig;
+  try {
+    const raw = window.sessionStorage.getItem(MODEL_CONFIG_SESSION_KEY) || window.localStorage.getItem(MODEL_CONFIG_PERSIST_KEY);
+    return raw ? normalizeModelConfig(JSON.parse(raw)) : emptyModelConfig;
+  } catch {
+    return emptyModelConfig;
+  }
+}
+
+function saveModelConfig(value) {
+  const config = normalizeModelConfig(value);
+  if (typeof window === "undefined") return config;
+  try {
+    window.sessionStorage.setItem(MODEL_CONFIG_SESSION_KEY, JSON.stringify(config));
+    if (config.remember && config.apiKey) {
+      window.localStorage.setItem(MODEL_CONFIG_PERSIST_KEY, JSON.stringify(config));
+    } else {
+      window.localStorage.removeItem(MODEL_CONFIG_PERSIST_KEY);
+    }
+  } catch {}
+  return config;
+}
+
+function getRequestModelConfig() {
+  const config = loadModelConfig();
+  if (!config.enabled || !config.apiKey) return null;
+  return { provider: config.provider, model: config.model, apiKey: config.apiKey };
+}
+
+// ---------- 模型 API（SOS、教练、动态剧情等） ----------
 async function callClaude(prompt) {
   const res = await fetch("/api/text", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt }),
+    body: JSON.stringify({ prompt, config: getRequestModelConfig() }),
   });
-  if (!res.ok) throw new Error("Claude request failed");
-  const data = await res.json();
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Model request failed");
   return data.text || "";
 }
 
@@ -618,6 +678,7 @@ export default function App() {
   const [notebook, setNotebook] = useState([]); // 我的复习本（个人存储）
   const [lastRoom, setLastRoom] = useState(null); // 上一场房间码（刷新恢复用）
   const [customScripts, setCustomScripts] = useState([]); // 自创剧本（共享存储，索引在个人）
+  const [modelConfig, setModelConfig] = useState(() => loadModelConfig());
   const customScriptsRef = useRef(customScripts);
   customScriptsRef.current = customScripts;
   const allScripts = React.useMemo(() => [...SCRIPTS, ...customScripts], [customScripts]);
@@ -733,6 +794,8 @@ export default function App() {
     setProfile(p);
     setView("home");
   };
+
+  const updateModelConfig = (next) => setModelConfig(saveModelConfig(next));
 
   const createRoom = async () => {
     const code = genCode();
@@ -912,6 +975,9 @@ export default function App() {
           onCreate={createRoom}
           onJoin={joinRoom}
           onRename={() => setView("onboard")}
+          modelConfig={modelConfig}
+          onModelConfigChange={updateModelConfig}
+          showToast={showToast}
           onOpenScript={(s) => {
             setPrepScript(s);
             setView("prep");
@@ -1104,7 +1170,7 @@ function Onboard({ onSave }) {
 
 /* ================= 前厅 ================= */
 
-function Home({ profile, prepMap, customScripts, notebookCount, lastRoom, onRejoin, onOpenNotebook, onOpenWizard, onDeleteScript, onCreate, onJoin, onRename, onOpenScript }) {
+function Home({ profile, prepMap, customScripts, notebookCount, lastRoom, onRejoin, onOpenNotebook, onOpenWizard, onDeleteScript, onCreate, onJoin, onRename, onOpenScript, modelConfig, onModelConfigChange, showToast }) {
   const [code, setCode] = useState("");
   return (
     <div className="space-y-4 ds-rise">
@@ -1129,6 +1195,8 @@ function Home({ profile, prepMap, customScripts, notebookCount, lastRoom, onRejo
           </Card>
         </button>
       )}
+
+      <ModelSettings config={modelConfig} onChange={onModelConfigChange} showToast={showToast} />
 
       {/* 复习本 */}
       <button className="w-full text-left" onClick={onOpenNotebook}>
@@ -1232,6 +1300,128 @@ function Home({ profile, prepMap, customScripts, notebookCount, lastRoom, onRejo
         （戴耳机 / 听筒贴耳 / 分设备低音量均可），否则麦克风会把对方的声音录进你的字幕。推荐 Chrome 浏览器。
       </p>
     </div>
+  );
+}
+
+function ModelSettings({ config, onChange, showToast }) {
+  const [open, setOpen] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const hasPersonalModel = config.enabled && !!config.apiKey;
+
+  const update = (patch) => onChange({ ...config, ...patch });
+  const selectProvider = (provider) =>
+    update({ provider, model: MODEL_PROVIDERS[provider].defaultModel });
+
+  const testConnection = async () => {
+    if (!config.apiKey) return showToast("先输入 API key 再验证", "err");
+    setTesting(true);
+    try {
+      const res = await fetch("/api/text", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: "Reply with exactly: DramaSpeak ready",
+          config: { provider: config.provider, model: config.model, apiKey: config.apiKey },
+          allowFallback: false,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "连接失败");
+      showToast(`${MODEL_PROVIDERS[config.provider].label} 已连接 ✓`);
+    } catch {
+      showToast("模型连接失败，检查 key、模型名和账户权限", "err");
+    }
+    setTesting(false);
+  };
+
+  return (
+    <Card style={{ border: `1px solid ${hasPersonalModel ? T.jade : T.line}` }}>
+      <button className="w-full text-left" onClick={() => setOpen((v) => !v)}>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <div className="ds-display text-lg">AI 编剧与教练</div>
+            <div className="text-xs mt-1" style={{ color: hasPersonalModel ? T.jade : T.faint }}>
+              {hasPersonalModel
+                ? `本设备使用 ${MODEL_PROVIDERS[config.provider].label} · ${config.model}`
+                : "配置你的模型后，幕间教练、下一幕和复盘会按真实对话生成"}
+            </div>
+          </div>
+          <span className="text-sm" style={{ color: T.spot }}>{open ? "收起" : "配置"}</span>
+        </div>
+      </button>
+
+      {open && (
+        <div className="mt-4 pt-4 space-y-3" style={{ borderTop: `1px solid ${T.line}` }}>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {Object.entries(MODEL_PROVIDERS).map(([id, provider]) => {
+              const active = config.provider === id;
+              return (
+                <button
+                  key={id}
+                  onClick={() => selectProvider(id)}
+                  className="rounded-lg px-3 py-2 text-sm text-left"
+                  style={{
+                    background: active ? "#332b16" : T.ink,
+                    border: `1px solid ${active ? T.spot : T.line}`,
+                    color: active ? T.spot : T.mut,
+                  }}
+                >
+                  {provider.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <label className="block text-xs" style={{ color: T.faint }}>
+            模型名称
+            <input
+              value={config.model}
+              onChange={(e) => update({ model: e.target.value })}
+              placeholder="例如 glm-5.2"
+              maxLength={128}
+              className="mt-1 w-full rounded-lg px-3 py-2.5 text-sm outline-none"
+              style={{ background: T.ink, border: `1px solid ${T.line}`, color: T.text }}
+            />
+          </label>
+
+          <label className="block text-xs" style={{ color: T.faint }}>
+            API key
+            <input
+              type="password"
+              value={config.apiKey}
+              onChange={(e) => update({ apiKey: e.target.value, enabled: !!e.target.value })}
+              placeholder="仅保存在你的浏览器中，不会发给搭档"
+              autoComplete="off"
+              className="mt-1 w-full rounded-lg px-3 py-2.5 text-sm outline-none"
+              style={{ background: T.ink, border: `1px solid ${T.line}`, color: T.text }}
+            />
+          </label>
+
+          <label className="flex items-center gap-2 text-xs cursor-pointer" style={{ color: T.mut }}>
+            <input
+              type="checkbox"
+              checked={config.remember}
+              onChange={(e) => update({ remember: e.target.checked })}
+            />
+            在此设备记住 key（默认只在本次浏览器会话中保存）
+          </label>
+
+          <div className="flex gap-2">
+            <Btn kind="panel" onClick={testConnection} disabled={testing || !config.apiKey}>
+              {testing ? "验证中…" : "验证连接"}
+            </Btn>
+            {hasPersonalModel && (
+              <Btn kind="ghost" onClick={() => update({ ...emptyModelConfig })}>
+                改用服务器默认模型
+              </Btn>
+            )}
+          </div>
+          <p className="text-xs leading-relaxed" style={{ color: T.faint }}>
+            你的 key 只随本机发起的模型请求发送到对应服务商，不会写入房间、复盘或 GitHub。
+          </p>
+        </div>
+      )}
+    </Card>
   );
 }
 

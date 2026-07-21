@@ -232,10 +232,41 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { prompt } = req.body || {};
+  const { prompt, config, allowFallback = true } = req.body || {};
   if (!prompt || typeof prompt !== "string") {
     return res.status(400).json({ error: "Missing prompt" });
   }
+
+  const runtime = resolveRuntime(config);
+  const provider = runtime?.provider;
+
+  if (!runtime) {
+    return res.status(200).json({ text: fallback(prompt), provider: "fallback", demo: true });
+  }
+
+  try {
+    const text =
+      provider === "anthropic"
+        ? await callAnthropic(prompt, runtime)
+        : await callOpenAICompatible(prompt, runtime);
+
+    return res.status(200).json({ text, provider, configured: true });
+  } catch (error) {
+    if (allowFallback !== false) {
+      return res.status(200).json({
+        text: fallback(prompt),
+        provider: "fallback",
+        demo: true,
+        warning: "Model request failed",
+      });
+    }
+    return res.status(502).json({ error: "无法连接所选模型，请检查 API key、模型名和账户权限。" });
+  }
+}
+
+function resolveRuntime(clientConfig) {
+  const client = normalizeClientConfig(clientConfig);
+  if (client) return client;
 
   const provider = (
     process.env.TEXT_PROVIDER ||
@@ -244,36 +275,54 @@ export default async function handler(req, res) {
     (process.env.ANTHROPIC_API_KEY ? "anthropic" : "")
   ).toLowerCase();
 
-  if (!provider) {
-    return res.status(200).json({ text: fallback(prompt), demo: true });
+  if (!provider) return null;
+  if (provider === "anthropic") {
+    return {
+      provider,
+      apiKey: process.env.ANTHROPIC_API_KEY || process.env.TEXT_API_KEY,
+      model: process.env.ANTHROPIC_MODEL || process.env.TEXT_MODEL || "claude-sonnet-4-20250514",
+      label: "Claude",
+    };
   }
 
-  try {
-    const text =
-      provider === "anthropic"
-        ? await callAnthropic(prompt)
-        : provider === "glm"
-        ? await callOpenAICompatible(prompt, {
-            apiKey: process.env.GLM_API_KEY || process.env.TEXT_API_KEY,
-            baseUrl: process.env.GLM_BASE_URL || "https://open.bigmodel.cn/api/paas/v4",
-            model: process.env.GLM_MODEL || process.env.TEXT_MODEL || "glm-4-flash",
-            label: "GLM",
-          })
-        : await callOpenAICompatible(prompt, {
-            apiKey: process.env.TEXT_API_KEY,
-            baseUrl: process.env.TEXT_BASE_URL,
-            model: process.env.TEXT_MODEL,
-            label: "OpenAI-compatible",
-          });
-
-    return res.status(200).json({ text, provider });
-  } catch (error) {
-    return res.status(500).json({ error: "Text model API error", detail: error.message });
+  if (provider === "glm") {
+    return {
+      provider,
+      apiKey: process.env.GLM_API_KEY || process.env.TEXT_API_KEY,
+      baseUrl: process.env.GLM_BASE_URL || "https://open.bigmodel.cn/api/paas/v4",
+      model: process.env.GLM_MODEL || process.env.TEXT_MODEL || "glm-5.2",
+      label: "GLM",
+    };
   }
+
+  return {
+    provider: "openai-compatible",
+    apiKey: process.env.TEXT_API_KEY,
+    baseUrl: process.env.TEXT_BASE_URL || "https://api.openai.com/v1",
+    model: process.env.TEXT_MODEL || "gpt-4o-mini",
+    label: "OpenAI-compatible",
+  };
 }
 
-async function callAnthropic(prompt) {
-  const apiKey = process.env.ANTHROPIC_API_KEY || process.env.TEXT_API_KEY;
+function normalizeClientConfig(value) {
+  if (!value || typeof value !== "object") return null;
+  const provider = String(value.provider || "").toLowerCase();
+  const apiKey = String(value.apiKey || "").trim();
+  const model = String(value.model || "").trim();
+  if (!apiKey || apiKey.length > 512 || !model || model.length > 128) return null;
+
+  const presets = {
+    glm: { baseUrl: "https://open.bigmodel.cn/api/paas/v4", label: "GLM" },
+    deepseek: { baseUrl: "https://api.deepseek.com/v1", label: "DeepSeek" },
+    qwen: { baseUrl: "https://dashscope.aliyuncs.com/compatible-mode/v1", label: "Qwen" },
+    "openai-compatible": { baseUrl: "https://api.openai.com/v1", label: "OpenAI" },
+  };
+  if (provider === "anthropic") return { provider, apiKey, model, label: "Claude" };
+  if (!presets[provider]) return null;
+  return { provider, apiKey, model, ...presets[provider] };
+}
+
+async function callAnthropic(prompt, { apiKey, model }) {
   if (!apiKey) throw new Error("Missing ANTHROPIC_API_KEY");
 
   const anthropicRes = await fetch("https://api.anthropic.com/v1/messages", {
@@ -284,16 +333,13 @@ async function callAnthropic(prompt) {
       "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify({
-      model: process.env.ANTHROPIC_MODEL || process.env.TEXT_MODEL || "claude-sonnet-4-20250514",
+      model,
       max_tokens: Number(process.env.TEXT_MAX_TOKENS || 1200),
       messages: [{ role: "user", content: prompt }],
     }),
   });
 
-  if (!anthropicRes.ok) {
-    const detail = await anthropicRes.text();
-    throw new Error(`Anthropic request failed: ${detail}`);
-  }
+  if (!anthropicRes.ok) throw new Error(`Anthropic request failed (${anthropicRes.status})`);
 
   const data = await anthropicRes.json();
   return (data.content || [])
@@ -322,10 +368,7 @@ async function callOpenAICompatible(prompt, { apiKey, baseUrl, model, label }) {
       }),
     });
 
-  if (!modelRes.ok) {
-    const detail = await modelRes.text();
-    throw new Error(`${label} request failed: ${detail}`);
-  }
+  if (!modelRes.ok) throw new Error(`${label} request failed (${modelRes.status})`);
 
   const data = await modelRes.json();
   const text = data.choices?.[0]?.message?.content || data.choices?.[0]?.text || "";
