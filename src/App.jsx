@@ -351,7 +351,7 @@ const LEGACY_SCRIPTS = [
 ];
 
 /* ============================================================
-   预置剧本库（3 部：25 分钟男女双主角 Drama）
+   预置剧本库（6 部：双主角 Drama）
    ============================================================ */
 const SCRIPTS = [
   {
@@ -485,6 +485,150 @@ const SCRIPTS = [
     p2: [{ en: "buy into the vision", zh: "相信愿景" }, { en: "move the goalposts", zh: "临时改变标准" }, { en: "own the mistake", zh: "承担错误" }, { en: "a controlled preview", zh: "受控预览" }, { en: "call the shots", zh: "拍板决定" }],
     p3: [{ en: "A good story is not the same thing as a defensible claim.", zh: "好故事不等于站得住的主张。" }, { en: "You don't get to borrow my reputation to cover your uncertainty.", zh: "你不能拿我的信誉掩盖你的不确定。" }, { en: "The bravest pitch may be the one that admits what is unfinished.", zh: "最勇敢的路演，也许是承认尚未完成的那个。" }],
     quiz: [{ situation: "你要请求十分钟时间，但不能显得逃避。", reference: "Give me ten minutes before you decide. I can defend the product, not a lie.", tip: "给出明确时间，并先划清诚实边界。" }, { situation: "你要让对方解释问题，不直接指控。", reference: "Walk me through what actually happened.", tip: "walk me through 要求完整复盘，很适合高压场景。" }, { situation: "提出一个不欺骗媒体的替代方案。", reference: "We could frame this as a controlled preview — if we're transparent about the limits.", tip: "先给方案，再给透明条件。" }, { situation: "你们还在争执，提醒对方回到可做的事。", reference: "Let's separate the problem from the panic. What can we prove right now?", tip: "把情绪和问题拆开，是危机沟通的核心。" }],
+  },
+  {
+    id: "will",
+    title: "遗嘱之夜",
+    en: "The Reading of the Will",
+    genre: "豪门悬疑",
+    difficulty: 3,
+    minutes: 22,
+    logline: "老爷子的遗嘱今晚开封，两个继承人被单独留在书房——遗嘱里少了一个人的名字，而多了一个谁都没料到的条件。",
+    world: "暴雨夜的乡间庄园。地产大亨 Gerald Ashcroft 上周离世，留下一份要求两名继承人当面共读、达成一致后方可生效的古怪遗嘱。律师读完前半段就被叫出书房处理一桩意外，把两人和那份没读完的文件单独锁在了这里。",
+    relationship: "亡者远走多年的独子 Victor，与亡者晚年最信任的私人助理 Eleanor。外界认定她图谋家产，但两人今晚第一次真正面对面。",
+    acts: [
+      { t: "第一幕 · 缺席的名字", d: "遗嘱前半段只提到 Eleanor，没有 Victor。Victor 要查清她凭什么出现，Eleanor 则坚持先把文件读完。" },
+      { t: "第二幕 · 附加条件", teaser: "未读完的条款要求两人共同决定一件比遗产更难分割的东西……" },
+      { t: "第三幕 · 血缘落款", teaser: "律师即将回来；签字之前，有人必须决定真相究竟能不能换来一个家。" },
+    ],
+    hook: "由 Victor 开场：把遗嘱推到 Eleanor 面前，问她“你对他而言到底算什么？”",
+    roles: {
+      A: {
+        name: "Victor", gender: "男", title: "亡者的独子", persona: "男性，外冷内热，习惯用讽刺武装自己。十年前和父亲大吵后离家，靠自己在国外打拼。", stance: "你是唯一的血亲，理应继承一切。但你回来不只为了钱；你想知道父亲是否原谅了你，以及 Eleanor 在他最后几年究竟扮演了什么角色。",
+        tasks: { main: { goal: "套出 Eleanor 与父亲之间真正的关系，且不能直接指控。你还藏着一件事：父亲生前寄来一封信，却被你退回未拆。", judge: "Eleanor 说出与亡者的隐藏关系，且不是被直接质问逼出来的。" }, bonus: { goal: "全程不让 Eleanor 察觉你退回过父亲的信。" } },
+        p0: [{ en: "Let's not pretend we're strangers here.", zh: "我们就别装作陌生人了（拉近又施压）" }, { en: "What exactly were you to him?", zh: "你对他而言到底算什么？（试探关系）" }],
+      },
+      B: {
+        name: "Eleanor", gender: "女", title: "亡者的私人助理", persona: "女性，温和克制、滴水不漏，但眼神里有故事。为 Ashcroft 家工作七年，对这栋房子比谁都熟。", stance: "所有人都以为你是攀附豪门的外人。你意外被写进遗嘱，却不在乎钱；你在乎的是能否守住一个秘密走出书房。",
+        tasks: { main: { goal: "你其实是亡者从未公开承认的女儿。先让同父异母的 Victor 对你产生善意，甚至承认你有权分一份，再决定是否说出真相。", judge: "Victor 主动表达接纳或承认你有权继承，且你没有先自曝身份。" }, bonus: { goal: "自然引用一次亡者生前说过的话，让 Victor 相信你真的了解父亲。" } },
+        p0: [{ en: "There are things you don't know about him.", zh: "关于他，有些事你并不知道（埋伏笔）" }, { en: "I never wanted any of this.", zh: "这一切我从没想要过（表明动机）" }],
+      },
+    },
+    p0shared: [{ en: "Let's read the rest of it together.", zh: "我们把剩下的一起读完（推进剧情）" }, { en: "I'll be honest with you — up to a point.", zh: "我跟你说实话，但只说到某个程度（半坦白）" }, { en: "Why would he write that?", zh: "他为什么要那样写？（追问动机）" }, { en: "I'm not accusing you, but...", zh: "我不是在指控你，但是……（软化指控）" }, { en: "What are you really after?", zh: "你到底想要什么？（直击核心）" }],
+    p1: [{ from: "You are lying.", to: "That story has a few too many holes.", zh: "指出谎言但不撕破脸。" }, { from: "I don't trust you.", to: "You'll forgive me if I'm cautious.", zh: "表达不信任但保持体面。" }, { from: "Tell me the truth.", to: "I think it's time you leveled with me.", zh: "要求坦白，更有分量。" }, { from: "He loved me more.", to: "Whatever he felt, he never said it out loud.", zh: "把情绪讲成克制的遗憾。" }],
+    rolePrep: {
+      A: {
+        p1: [{ from: "Who are you?", to: "Help me understand why he trusted you so completely.", zh: "Victor 用追问信任来源代替身份审讯。" }, { from: "You manipulated him.", to: "I'm trying to separate loyalty from influence here.", zh: "质疑影响力，但不直接扣帽子。" }, { from: "I deserve everything.", to: "I'm not here to reduce this to entitlement.", zh: "压住继承人的傲慢，保留谈判空间。" }],
+        p2: [{ en: "read between the lines", zh: "听出言外之意" }, { en: "keep someone at arm's length", zh: "与某人保持距离" }, { en: "piece the story together", zh: "拼出事情全貌" }],
+        p3: [{ en: "I want the version of him that never made it into this house.", zh: "我想知道那个从未在这栋房子里出现过的他。" }, { en: "Inheritance is the least complicated thing in this room.", zh: "遗产反而是这间屋里最简单的事。" }],
+        quiz: [{ situation: "你想追问父亲为何如此信任 Eleanor。", reference: "Help me understand why he trusted you so completely.", tip: "用 help me understand 把审问包装成求证。" }, { situation: "你怀疑她影响了遗嘱，但不能直接指控。", reference: "I'm trying to separate loyalty from influence here.", tip: "separate A from B 能精准划分问题。" }, { situation: "你要强调自己想要的并不只是遗产。", reference: "Inheritance is the least complicated thing in this room.", tip: "用反差把讨论引向关系与秘密。" }],
+      },
+      B: {
+        p1: [{ from: "I don't want money.", to: "My reasons for being here were never financial.", zh: "Eleanor 澄清动机但不急着自证。" }, { from: "He cared about me.", to: "He trusted me with the parts of his life he couldn't explain.", zh: "暗示亲密关系，不直接揭底。" }, { from: "You don't understand him.", to: "You knew the man he had been; I knew the man he became.", zh: "承认两人看到的是父亲的不同阶段。" }],
+        p2: [{ en: "earn someone's trust", zh: "赢得某人的信任" }, { en: "be named in the will", zh: "被写入遗嘱" }, { en: "keep something in confidence", zh: "替某事保密" }],
+        p3: [{ en: "I am not asking you to rewrite the past, only to make room for it.", zh: "我不是要你改写过去，只是给它留一个位置。" }, { en: "Recognition can matter more than inheritance.", zh: "被承认有时比继承更重要。" }],
+        quiz: [{ situation: "你要澄清自己留下并非为了钱。", reference: "My reasons for being here were never financial.", tip: "financial 比 money 更克制正式。" }, { situation: "你想暗示亡者把脆弱的一面交给了你。", reference: "He trusted me with the parts of his life he couldn't explain.", tip: "trusted me with 表示把重要之物托付给你。" }, { situation: "你希望 Victor 为你的存在留一点空间。", reference: "I'm not asking you to rewrite the past, only to make room for it.", tip: "not asking... only... 适合提出有限请求。" }],
+      },
+    },
+    p2: [{ en: "keep something under wraps", zh: "把某事捂着不说" }, { en: "the elephant in the room", zh: "谁都不提的明显问题" }, { en: "come to terms with ...", zh: "接受、与……和解" }, { en: "have a hidden agenda", zh: "别有用心" }, { en: "let bygones be bygones", zh: "既往不咎" }],
+    p3: [{ en: "Blood is thicker than water, or so they say.", zh: "都说血浓于水——反讽用" }, { en: "You're barking up the wrong tree.", zh: "你找错方向了" }, { en: "Some secrets die with us.", zh: "有些秘密该随人一起入土" }],
+    quiz: [{ situation: "你怀疑对方在撒谎，想不撕破脸地点出漏洞。", reference: "That story has a few too many holes for my liking.", tip: "用 holes 代替 lie，含蓄又有力。" }, { situation: "你想让对方坦白，但语气要有分量。", reference: "I think it's time you leveled with me.", tip: "level with someone 表示对某人说实话。" }, { situation: "你想把嫉妒说成克制的遗憾。", reference: "Whatever he felt, he never said it out loud.", tip: "把指责转成遗憾，情绪张力更强。" }, { situation: "你想点破谁都不愿提的事。", reference: "Let's address the elephant in the room, shall we?", tip: "经典的正式社交破冰表达。" }],
+  },
+  {
+    id: "signal",
+    title: "静默信号",
+    en: "Signal Lost",
+    genre: "太空悬疑",
+    difficulty: 3,
+    minutes: 20,
+    logline: "深空科研站只剩两名幸存者，地球失联，氧气够一个人撑到救援——而其中一个人，可能根本不是人。",
+    world: "木星轨道上的俄耳甫斯科研站，一场事故后六名船员死了四个。通讯阵列被撞毁，生命维持系统受损，剩余氧气只够一人活到四十小时后的救援舱抵达。",
+    relationship: "任务指挥官 Reyes 与新上站三个月的系统工程师 Kim。事故当晚 Kim 独自在维修舱，而 Reyes 正背负失去搭档和做出决定的双重压力。",
+    acts: [
+      { t: "第一幕 · 余氧", d: "系统确认氧气只够一人。Reyes 要 Kim 复盘事故当晚，Kim 则发现指挥官同样避开了一个关键时间点。" },
+      { t: "第二幕 · 最后通讯", teaser: "损坏的终端恢复了一段来自地球的警告，时间戳早于事故整整六小时……" },
+      { t: "第三幕 · 救援舱", teaser: "救援信标开始闪烁；两人必须决定谁进入舱，也必须决定让哪一个真相返回地球。" },
+    ],
+    hook: "由 Reyes 开场：调出事故日志，对 Kim 说“把那晚发生的事一步步跟我讲清楚”。",
+    roles: {
+      A: {
+        name: "Reyes", gender: "男", title: "任务指挥官", persona: "男性，沉着克制、责任感极重。二十年飞行生涯第一次遇到无法上报、只能自己扛的局面。", stance: "你必须查清事故原因，也必须决定最后一份氧气给谁。Kim 事发时不在监控范围内，但你不能凭恐惧下判断。",
+        tasks: { main: { goal: "引导 Kim 交代事故当晚的具体行踪，不能直接审讯。你还必须掩盖真正损毁通讯阵列的操作失误来自你的一道仓促指令。", judge: "Kim 说出当晚具体行踪，且不是被直接逼问出来的。" }, bonus: { goal: "全程不让 Kim 察觉那道致命指令是你下的。" } },
+        p0: [{ en: "Walk me through what happened that night.", zh: "把那晚的事一步步跟我讲清楚（引导交代）" }, { en: "I need to be able to trust you.", zh: "我需要能够信任你（施压兼试探）" }],
+      },
+      B: {
+        name: "Kim", gender: "女", title: "系统工程师", persona: "女性，安静精确，习惯用数据说话。上站仅三个月，是船员里的外人，事故后却出奇平静。", stance: "你知道自己最可疑：事发时独自在维修舱，没人能作证。你必须让 Reyes 相信你无辜，才能争取氧气；但越解释越像在掩饰。",
+        tasks: { main: { goal: "你截获过一段被 Reyes 私自压下的地球撤离警告。先试探他是否知情，并让他明确信任你，再决定是否公开这条信息。", judge: "Reyes 明确表达信任，且你没有先抛出撤离警告。" }, bonus: { goal: "自然套问出 Reyes 对地球最后一次通讯知道多少。" } },
+        p0: [{ en: "There's something you're not telling me either.", zh: "你也有事瞒着我（反将一军）" }, { en: "I had nothing to do with the crash.", zh: "事故跟我无关（自证清白）" }],
+      },
+    },
+    p0shared: [{ en: "We don't have time to play games.", zh: "我们没时间兜圈子了（制造紧迫）" }, { en: "Let's lay our cards on the table.", zh: "我们把话都摊开说吧（邀请坦白）" }, { en: "That doesn't line up with the logs.", zh: "这和记录对不上（质疑）" }, { en: "One of us is lying.", zh: "我们俩里有一个在撒谎（逼问）" }, { en: "I want to believe you.", zh: "我想相信你（示弱兼施压）" }],
+    p1: [{ from: "You did something.", to: "The timeline doesn't add up on your end.", zh: "指控转为质疑时间线。" }, { from: "I am not lying.", to: "I've got no reason to lie to you now.", zh: "自证时给出理由更可信。" }, { from: "Tell me now.", to: "I need the truth, and I need it now.", zh: "施压时增加重量。" }, { from: "I am scared.", to: "I won't pretend I'm not on edge.", zh: "把恐惧说得克制专业。" }],
+    rolePrep: {
+      A: {
+        p1: [{ from: "Where were you?", to: "Walk me through the gap in the maintenance log.", zh: "Reyes 用日志缺口引导 Kim 自述。" }, { from: "Your story is wrong.", to: "That sequence doesn't match the system record.", zh: "把怀疑落到可核查的记录。" }, { from: "I decide who lives.", to: "Command means I have to make a decision I can defend.", zh: "用责任而非权力表达决定。" }],
+        p2: [{ en: "account for the missing time", zh: "解释缺失的时间" }, { en: "follow the chain of command", zh: "遵循指挥链" }, { en: "rule out a possibility", zh: "排除一种可能" }],
+        p3: [{ en: "I can't let suspicion make this decision for me.", zh: "我不能让怀疑替我做这个决定。" }, { en: "Every order leaves a trace, even the ones we regret.", zh: "每道命令都会留下痕迹，包括我们后悔的那些。" }],
+        quiz: [{ situation: "你想让 Kim 解释维修日志里的空白。", reference: "Walk me through the gap in the maintenance log.", tip: "gap 把模糊怀疑变成明确缺口。" }, { situation: "你要指出她的叙述与记录不符。", reference: "That sequence doesn't match the system record.", tip: "match the record 是专业核查表达。" }, { situation: "你必须说明这是责任决定，不是权力游戏。", reference: "Command means I have to make a decision I can defend.", tip: "a decision I can defend 强调可解释性。" }],
+      },
+      B: {
+        p1: [{ from: "I am innocent.", to: "The data can clear this up faster than I can.", zh: "Kim 用数据自证，避免情绪辩解。" }, { from: "You know something.", to: "Your timeline has a gap too, Commander.", zh: "反向指出 Reyes 的时间线同样缺失。" }, { from: "Trust me.", to: "Cross-check my account against the raw logs.", zh: "邀请验证，比空口求信任更可信。" }],
+        p2: [{ en: "clear my name", zh: "洗清嫌疑" }, { en: "cross-check the logs", zh: "交叉核对日志" }, { en: "go on the record", zh: "正式留下记录" }],
+        p3: [{ en: "If you want certainty, interrogate the data, not the survivor.", zh: "若你要确定性，就审问数据，不要审问幸存者。" }, { en: "Silence in a log is still information.", zh: "日志里的沉默也是信息。" }],
+        quiz: [{ situation: "你想用原始数据洗清嫌疑。", reference: "The data can clear this up faster than I can.", tip: "让证据替你说话，语气更冷静。" }, { situation: "你要指出指挥官的时间线也有缺口。", reference: "Your timeline has a gap too, Commander.", tip: "too 把审问变成双向核查。" }, { situation: "你邀请对方验证自己的陈述。", reference: "Cross-check my account against the raw logs.", tip: "cross-check against 是专业比对表达。" }],
+      },
+    },
+    p2: [{ en: "buy time", zh: "拖延、争取时间" }, { en: "cover your tracks", zh: "掩盖行踪或痕迹" }, { en: "a leap of faith", zh: "赌一把的信任" }, { en: "call someone's bluff", zh: "戳穿某人的虚张声势" }, { en: "the point of no return", zh: "无法回头的临界点" }],
+    p3: [{ en: "Trust is a luxury we can't afford right now.", zh: "信任是此刻我们负担不起的奢侈" }, { en: "Read between the lines, Commander.", zh: "听出我的弦外之音，指挥官" }, { en: "We're both running out of air and answers.", zh: "我们的氧气和答案都在见底" }],
+    quiz: [{ situation: "你想不指控地质疑对方的时间线。", reference: "The timeline just doesn't add up on your end.", tip: "doesn't add up 表示逻辑说不通。" }, { situation: "你想强调自己现在没理由撒谎。", reference: "I've got no reason to lie to you now — we're in the same boat.", tip: "in the same boat 强化命运共同体。" }, { situation: "你想承认紧张但不显慌乱。", reference: "I won't pretend I'm not on edge, but I'm still thinking clearly.", tip: "on edge 比 scared 更克制。" }, { situation: "你想戳穿对方在虚张声势。", reference: "I think you're bluffing — prove me wrong.", tip: "bluffing 是高压博弈中的高频表达。" }],
+  },
+  {
+    id: "wedding",
+    title: "婚礼前夜",
+    en: "The Night Before",
+    genre: "情感博弈",
+    difficulty: 3,
+    minutes: 20,
+    logline: "婚礼前夜的酒店露台，明天的新娘撞见三年前不辞而别的旧情人——而他，正是明天伴郎团里的一员。",
+    world: "海边度假酒店，明天有一场盛大婚礼。深夜顶楼露台只剩海风和两杯没喝完的酒。距离婚礼开始十小时，Jamie 撞见了那个本该永远消失在过去的人。",
+    relationship: "一对三年前无疾而终的旧情人。Alex 当年不告而别，Jamie 从没得到解释；如今一个即将走进婚姻，一个带着没说出口的话回来道别。",
+    acts: [
+      { t: "第一幕 · 露台重逢", d: "Jamie 想问清 Alex 当年为何离开，Alex 却只愿谈明天的婚礼。两人都努力表现得自己早已翻篇。" },
+      { t: "第二幕 · 没说完的告别", teaser: "一件被保留三年的旧物，让“已经放下”突然变成一句站不住的话……" },
+      { t: "第三幕 · 天亮之前", teaser: "婚礼晨钟将响；他们必须决定今晚是最后一次告别，还是第一次真正说实话。" },
+    ],
+    hook: "由 Jamie 开场：看着 Alex 手里的酒杯，说“你欠我一个诚实的答案，就一个”。",
+    roles: {
+      A: {
+        name: "Jamie", gender: "女", title: "明天的新娘", persona: "女性，外表笃定，内心却一直没放下那段旧情。为婚礼准备了一切，唯独没准备好面对今晚这个人。", stance: "未婚夫是个好人，你也确信自己做了正确选择。但 Alex 当年的不辞而别仍是心里一根刺；你想在走进婚姻前最后问清一次。",
+        tasks: { main: { goal: "引导 Alex 说出当年离开的真实原因，同时不能显得自己仍未放下。你至今保留着他送的东西，就在今晚的行李里。", judge: "Alex 说出离开的真实原因，且 Jamie 没有表现出仍未放下。" }, bonus: { goal: "全程不让 Alex 察觉你还保留着当年他送的东西。" } },
+        p0: [{ en: "I'm not asking for me — I just need to understand.", zh: "我不是为自己问，我只是想弄明白（掩饰在意）" }, { en: "Why did you really leave?", zh: "你当年到底为什么走？（直击核心）" }],
+      },
+      B: {
+        name: "Alex", gender: "男", title: "伴郎团成员", persona: "男性，看似洒脱、谈笑风生，其实每句轻松的话下面都压着分量。以新郎好友的身份出现，本身就是一场豪赌。", stance: "三年前你选择离开，有一个从未告诉任何人的理由。今晚你本可躲开，却还是来了；你告诉自己只是来道别和祝福。",
+        tasks: { main: { goal: "当年你因一场重病不想拖累 Jamie 而消失，如今已经痊愈。不要透露病情，也不要破坏婚礼；让她说出“如果当年你留下”之类的假设。", judge: "Jamie 说出关于你当年留下的假设性话语，且你没有透露病情。" }, bonus: { goal: "真诚祝福明天的婚礼，让 Jamie 相信你已经释怀。" } },
+        p0: [{ en: "You look happy. I mean that.", zh: "你看起来很幸福，我是真心的（试探兼祝福）" }, { en: "Some doors are better left closed.", zh: "有些门还是关着的好（暗示秘密）" }],
+      },
+    },
+    p0shared: [{ en: "We were good together, weren't we?", zh: "我们当年很相配，不是吗？（唤起旧情）" }, { en: "I've moved on — mostly.", zh: "我已经放下了——大部分（欲盖弥彰）" }, { en: "Let's not do this tonight.", zh: "今晚我们别聊这个吧（回避）" }, { en: "There's something I never told you.", zh: "有件事我从没告诉过你（埋伏笔）" }, { en: "What are we even doing here?", zh: "我们这算在干什么？（点破张力）" }],
+    p1: [{ from: "I still think about you.", to: "You crossed my mind once or twice.", zh: "把思念说得轻描淡写。" }, { from: "Why did you leave me?", to: "You owe me one honest answer.", zh: "追问时给对方台阶。" }, { from: "I am happy now.", to: "I've built something good, and I mean it.", zh: "宣示幸福更有说服力。" }, { from: "Don't lie to me.", to: "Just this once, tell me the truth.", zh: "求真相时软化语气。" }],
+    rolePrep: {
+      A: {
+        p1: [{ from: "Why did you leave me?", to: "You owe me one honest answer before tomorrow.", zh: "Jamie 给追问设定清晰边界。" }, { from: "I am over you.", to: "I've built something good, and I'm choosing it.", zh: "强调当下选择，而不是防御过去。" }, { from: "This changes nothing.", to: "Understanding the past doesn't mean reopening it.", zh: "把求真相和重启关系分开。" }],
+        p2: [{ en: "get some closure", zh: "为关系找到终结感" }, { en: "draw a line under the past", zh: "给过去画上句号" }, { en: "second-guess a decision", zh: "重新怀疑一个决定" }],
+        p3: [{ en: "I can choose tomorrow and still question yesterday.", zh: "我可以选择明天，同时追问昨天。" }, { en: "An explanation is not an invitation back into my life.", zh: "解释不等于重新进入我的生活。" }],
+        quiz: [{ situation: "你想索取一个答案，但明确只谈到明天之前。", reference: "You owe me one honest answer before tomorrow.", tip: "before tomorrow 给情绪对话设定边界。" }, { situation: "你要说明自己正在主动选择现在的关系。", reference: "I've built something good, and I'm choosing it.", tip: "choosing 比 simply happy 更有主导感。" }, { situation: "你想说明问过去不代表要重来。", reference: "Understanding the past doesn't mean reopening it.", tip: "doesn't mean 能拆开两件容易被混淆的事。" }],
+      },
+      B: {
+        p1: [{ from: "Congratulations.", to: "You look happy, and I genuinely hope you are.", zh: "Alex 的祝福真诚，却保留一点试探。" }, { from: "I can't tell you why.", to: "Some answers would ask more of you than I have a right to.", zh: "守住秘密但承认答案有重量。" }, { from: "Do you still love me?", to: "Are you walking into tomorrow without any doubt?", zh: "不直接问感情，改问婚姻确定性。" }],
+        p2: [{ en: "make peace with the past", zh: "与过去和解" }, { en: "walk away for good", zh: "永远离开" }, { en: "leave the past where it belongs", zh: "让过去留在过去" }],
+        p3: [{ en: "I came to wish you well, not to make you choose again.", zh: "我是来祝福你的，不是让你再选一次。" }, { en: "Sometimes leaving is the only honest thing a frightened person can do.", zh: "有时离开是一个害怕的人唯一诚实的选择。" }],
+        quiz: [{ situation: "你想祝福 Jamie，又想确认她是否真的幸福。", reference: "You look happy, and I genuinely hope you are.", tip: "genuinely hope 让试探听起来不是挑衅。" }, { situation: "你要守住离开的原因，但承认它很沉重。", reference: "Some answers would ask more of you than I have a right to.", tip: "have a right to 表达克制的边界感。" }, { situation: "你不能直接问她是否还爱你。", reference: "Are you walking into tomorrow without any doubt?", tip: "把感情试探转成对婚姻选择的确认。" }],
+      },
+    },
+    p2: [{ en: "unfinished business", zh: "没了结的事" }, { en: "carry a torch for someone", zh: "对某人余情未了" }, { en: "water under the bridge", zh: "过去的事、都翻篇了" }, { en: "for old times' sake", zh: "看在旧日情分上" }, { en: "leave things unsaid", zh: "有些话留着不说" }],
+    p3: [{ en: "Timing was never on our side.", zh: "我们从来输给了时机" }, { en: "Let's not open old wounds.", zh: "别再揭旧伤疤了" }, { en: "You were the one that got away.", zh: "你是我错过的那个人" }],
+    quiz: [{ situation: "你想承认自己还想着对方，但要云淡风轻。", reference: "You crossed my mind once or twice — nothing dramatic.", tip: "cross one's mind 比 I think about you 更克制。" }, { situation: "你想要一个坦诚答案，又不想逼得太紧。", reference: "You owe me one honest answer — just one.", tip: "owe someone an answer 把追问变成合理索取。" }, { situation: "你想真诚宣示现在的幸福。", reference: "I've built something good here, and I mean every word of it.", tip: "I mean every word 加重真诚。" }, { situation: "你想形容这段没结果的旧情。", reference: "I guess some things are just unfinished business.", tip: "unfinished business 点透没了结的关系。" }],
   },
 ];
 
