@@ -1563,14 +1563,19 @@ function ModelSettings({ config, onChange, showToast }) {
       <button className="w-full text-left" onClick={() => setOpen((v) => !v)}>
         <div className="flex items-center justify-between gap-3">
           <div>
-            <div className="ds-display text-lg">AI 编剧与教练</div>
-            <div className="text-xs mt-1" style={{ color: hasPersonalModel ? T.jade : T.faint }}>
+            <div className="ds-display text-lg">AI 模型配置</div>
+            <div
+              className="text-xs mt-1 leading-5"
+              style={{ color: hasPersonalModel ? T.jade : T.faint }}
+            >
               {hasPersonalModel
-                ? `本设备使用 ${MODEL_PROVIDERS[config.provider].label} · ${config.model}`
-                : "配置你的模型后，幕间教练、下一幕和复盘会按真实对话生成"}
+                ? `已启用：${MODEL_PROVIDERS[config.provider].label} · ${config.model}`
+                : "选择模型厂商和版本，填写 API Key，开启实时教练、幕间推进与复盘"}
             </div>
           </div>
-          <span className="text-sm" style={{ color: T.spot }}>{open ? "收起" : "配置"}</span>
+          <span className="text-sm shrink-0" style={{ color: T.spot }}>
+            {open ? "收起" : hasPersonalModel ? "更改模型" : "配置模型"}
+          </span>
         </div>
       </button>
 
