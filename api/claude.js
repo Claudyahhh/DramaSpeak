@@ -1,3 +1,9 @@
+import {
+  applyRateLimitHeaders,
+  checkRateLimit,
+  validatePrompt,
+} from "../lib/server-security.js";
+
 const fallback = (prompt = "") => {
   if (prompt.includes('"concepts"') || prompt.includes("Give exactly 3 distinct story concepts")) {
     return JSON.stringify({
@@ -232,10 +238,14 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
+  res.setHeader("Cache-Control", "no-store");
   const { prompt, config, allowFallback = true } = req.body || {};
-  if (!prompt || typeof prompt !== "string") {
-    return res.status(400).json({ error: "Missing prompt" });
-  }
+  const promptCheck = validatePrompt(prompt);
+  if (!promptCheck.ok) return res.status(400).json({ error: promptCheck.error });
+
+  const rate = await checkRateLimit(req, { scope: "text-model", limit: 120, windowSeconds: 600 });
+  applyRateLimitHeaders(res, rate);
+  if (!rate.allowed) return res.status(429).json({ error: "Too many model requests" });
 
   const runtime = resolveRuntime(config);
   const provider = runtime?.provider;
@@ -274,6 +284,7 @@ export default async function handler(req, res) {
 function resolveRuntime(clientConfig) {
   const client = normalizeClientConfig(clientConfig);
   if (client) return client;
+  if (process.env.ALLOW_SERVER_MODEL !== "true") return null;
 
   const provider = (
     process.env.TEXT_PROVIDER ||
@@ -352,7 +363,7 @@ async function callAnthropic(prompt, { apiKey, model }) {
     },
     body: JSON.stringify({
       model,
-      max_tokens: Number(process.env.TEXT_MAX_TOKENS || 1200),
+      max_tokens: modelOutputTokens(),
       messages: [{ role: "user", content: prompt }],
     }),
   });
@@ -385,7 +396,7 @@ async function callOpenAIResponses(prompt, { apiKey, baseUrl, model, label }) {
     body: JSON.stringify({
       model,
       input: prompt,
-      max_output_tokens: Number(process.env.TEXT_MAX_TOKENS || 1200),
+      max_output_tokens: modelOutputTokens(),
     }),
   });
 
@@ -410,18 +421,18 @@ async function callOpenAICompatible(prompt, { apiKey, baseUrl, model, label }) {
 
   const endpoint = `${baseUrl.replace(/\/$/, "")}/chat/completions`;
   const modelRes = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model,
-        messages: [{ role: "user", content: prompt }],
-        temperature: Number(process.env.TEXT_TEMPERATURE || 0.7),
-        max_tokens: Number(process.env.TEXT_MAX_TOKENS || 1200),
-      }),
-    });
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages: [{ role: "user", content: prompt }],
+      temperature: boundedNumber(process.env.TEXT_TEMPERATURE, 0, 2, 0.7),
+      max_tokens: modelOutputTokens(),
+    }),
+  });
 
   if (!modelRes.ok) throw new Error(`${label} request failed (${modelRes.status})`);
 
@@ -429,4 +440,13 @@ async function callOpenAICompatible(prompt, { apiKey, baseUrl, model, label }) {
   const text = data.choices?.[0]?.message?.content || data.choices?.[0]?.text || "";
   if (!text) throw new Error(`${label} response did not include text`);
   return text;
+}
+
+function modelOutputTokens() {
+  return boundedNumber(process.env.TEXT_MAX_TOKENS, 256, 8000, 1200);
+}
+
+function boundedNumber(value, min, max, fallback) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? Math.min(max, Math.max(min, parsed)) : fallback;
 }

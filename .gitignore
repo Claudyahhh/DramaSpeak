@@ -3,3 +3,7 @@ dist
 .vercel
 .npm-cache
 .DS_Store
+.env
+.env.local
+.env.*.local
+!.env.example

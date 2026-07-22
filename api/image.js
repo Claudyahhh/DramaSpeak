@@ -1,13 +1,24 @@
+import {
+  applyRateLimitHeaders,
+  checkRateLimit,
+  MAX_IMAGE_PROMPT_CHARS,
+  validatePrompt,
+} from "../lib/server-security.js";
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Method not allowed" });
   }
 
+  res.setHeader("Cache-Control", "no-store");
   const { prompt, config } = req.body || {};
-  if (!prompt || typeof prompt !== "string" || prompt.length > 4000) {
-    return res.status(400).json({ error: "Missing prompt" });
-  }
+  const promptCheck = validatePrompt(prompt, MAX_IMAGE_PROMPT_CHARS);
+  if (!promptCheck.ok) return res.status(400).json({ error: promptCheck.error });
+
+  const rate = await checkRateLimit(req, { scope: "image-model", limit: 12, windowSeconds: 600 });
+  applyRateLimitHeaders(res, rate);
+  if (!rate.allowed) return res.status(429).json({ error: "Too many image requests" });
 
   const runtime = config ? resolveClientImageRuntime(config) : resolveServerImageRuntime();
   if (!runtime) {
@@ -19,7 +30,8 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ imageUrl, provider: runtime.provider, model: runtime.model });
   } catch (error) {
-    return res.status(500).json({ error: "Image model API error", detail: error.message });
+    console.error("Image model request failed", error instanceof Error ? error.message : "unknown");
+    return res.status(502).json({ error: "Image model API error" });
   }
 }
 
@@ -56,6 +68,7 @@ function resolveClientImageRuntime(value) {
 }
 
 function resolveServerImageRuntime() {
+  if (process.env.ALLOW_SERVER_MODEL !== "true") return null;
   const provider = (
     process.env.IMAGE_PROVIDER ||
     (process.env.GLM_IMAGE_API_KEY || process.env.GLM_API_KEY ? "glm" : "") ||
@@ -108,8 +121,7 @@ async function callOpenAICompatibleImage(prompt, { apiKey, baseUrl, model, size,
   });
 
   if (!imageRes.ok) {
-    const detail = await imageRes.text();
-    throw new Error(`${label} request failed: ${detail}`);
+    throw new Error(`${label} request failed (${imageRes.status})`);
   }
 
   const data = await imageRes.json();

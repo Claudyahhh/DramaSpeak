@@ -1,10 +1,11 @@
 const memoryStore = new Map();
+const ROOM_TOKEN_PREFIX = "dramaspeak:room-token:";
 
 const storeKey = (key, shared) => `${shared ? "shared" : "private"}:${key}`;
 
 const getBackingStore = () => {
   try {
-    const probe = "__duo_stage_probe__";
+    const probe = "__dramaspeak_probe__";
     window.localStorage.setItem(probe, "1");
     window.localStorage.removeItem(probe);
     return window.localStorage;
@@ -46,56 +47,99 @@ const listKeys = (prefix) => {
   return keys;
 };
 
+const roomCodeFromKey = (value) => {
+  const match = String(value || "").match(/^room:([A-HJ-NP-Z2-9]{6}):/);
+  return match?.[1] || null;
+};
+
+const getRoomToken = (roomCode) => readValue(`${ROOM_TOKEN_PREFIX}${roomCode}`);
+const setRoomToken = (roomCode, token) => writeValue(`${ROOM_TOKEN_PREFIX}${roomCode}`, token);
+const deleteRoomToken = (roomCode) => deleteValue(`${ROOM_TOKEN_PREFIX}${roomCode}`);
+
 if (typeof window !== "undefined" && !window.storage) {
   window.storage = {
+    async createRoom({ code, userId, name }) {
+      const remote = await requestStorage({ op: "createRoom", roomCode: code, userId, name });
+      if (!remote.ok) return remote;
+      setRoomToken(code, remote.token);
+      return remote;
+    },
+    async joinRoom({ code, userId, name }) {
+      const remote = await requestStorage({
+        op: "joinRoom",
+        roomCode: code,
+        userId,
+        name,
+        token: getRoomToken(code),
+      });
+      if (!remote.ok) return remote;
+      setRoomToken(code, remote.token);
+      return remote;
+    },
+    clearRoom(roomCode) {
+      deleteRoomToken(roomCode);
+    },
     async get(key, shared = true) {
       if (shared) {
-        const remote = await remoteStorage({ op: "get", key });
-        if (remote.ok) return remote.value == null ? null : { key, value: remote.value };
+        const roomCode = roomCodeFromKey(key);
+        if (!roomCode) return null;
+        const remote = await requestRoomStorage({ op: "get", key }, roomCode);
+        return remote.ok && remote.value != null ? { key, value: remote.value } : null;
       }
-      const value = readValue(storeKey(key, shared));
+      const value = readValue(storeKey(key, false));
       return value == null ? null : { key, value };
     },
     async set(key, value, shared = true) {
       if (shared) {
-        const remote = await remoteStorage({ op: "set", key, value });
-        if (remote.ok) return { key, value };
+        const roomCode = roomCodeFromKey(key);
+        if (!roomCode) throw new Error("Only room-scoped remote storage is allowed");
+        const remote = await requestRoomStorage({ op: "set", key, value }, roomCode);
+        if (!remote.ok) throw new Error(remote.error || "Remote storage failed");
+        return { key, value };
       }
-      writeValue(storeKey(key, shared), value);
+      writeValue(storeKey(key, false), value);
       return { key, value };
     },
     async delete(key, shared = true) {
       if (shared) {
-        const remote = await remoteStorage({ op: "delete", key });
-        if (remote.ok) return;
+        const roomCode = roomCodeFromKey(key);
+        if (!roomCode) throw new Error("Only room-scoped remote storage is allowed");
+        const remote = await requestRoomStorage({ op: "delete", key }, roomCode);
+        if (!remote.ok) throw new Error(remote.error || "Remote storage failed");
+        return;
       }
-      deleteValue(storeKey(key, shared));
+      deleteValue(storeKey(key, false));
     },
     async list(prefix, shared = true) {
       if (shared) {
-        const remote = await remoteStorage({ op: "list", prefix });
-        if (remote.ok) return { keys: remote.keys || [] };
+        const roomCode = roomCodeFromKey(prefix);
+        if (!roomCode) return { keys: [] };
+        const remote = await requestRoomStorage({ op: "list", prefix }, roomCode);
+        return { keys: remote.ok ? remote.keys || [] : [] };
       }
-      const scopedPrefix = storeKey(prefix, shared);
-      const keys = listKeys(scopedPrefix).map((key) =>
-        key.replace(/^(shared|private):/, "")
-      );
+      const scopedPrefix = storeKey(prefix, false);
+      const keys = listKeys(scopedPrefix).map((key) => key.replace(/^private:/, ""));
       return { keys };
     },
   };
 }
 
-async function remoteStorage(payload) {
+async function requestRoomStorage(payload, roomCode) {
+  const token = getRoomToken(roomCode);
+  if (!token) return { ok: false, error: "Missing room token" };
+  return requestStorage({ ...payload, roomCode, token });
+}
+
+async function requestStorage(payload) {
   try {
     const res = await fetch("/api/storage", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-    if (!res.ok) return { ok: false };
-    const data = await res.json();
-    return { ok: true, ...data };
+    const data = await res.json().catch(() => ({}));
+    return { ok: res.ok, status: res.status, ...data };
   } catch {
-    return { ok: false };
+    return { ok: false, error: "Storage request failed" };
   }
 }

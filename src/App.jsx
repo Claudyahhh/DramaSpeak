@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 
 /* ============================================================
-   DramaSpeak · 职场英语剧本杀 — Milestone 2
+   DramaSpeak · 沉浸式双人英语剧场
    M1: 骨架 + 房间 + 双人同步 + 试音台
    M2: 预置剧本库 + 备课卡(P0-P3+自测) + 选剧本/选角色/隐藏任务
    M3: 对话舞台 — 双人字幕互见 + P0点亮 + SOS提词 + 落幕
@@ -37,318 +37,6 @@ const FONT_CSS = `
   .ds-pulse { animation: none !important; }
 }
 `;
-
-/* ============================================================
-   旧版预置剧本库（保留数据兼容）
-   ============================================================ */
-const LEGACY_SCRIPTS = [
-  {
-    id: "deadline",
-    title: "生死线谈判",
-    en: "The Deadline Standoff",
-    genre: "职场会议",
-    difficulty: 2,
-    minutes: 20,
-    logline: "上线日期只剩两周，产品负责人和技术负责人必须在这间会议室里谈出一个双方都能活下去的方案。",
-    world:
-      "一家 50 人的 SaaS 创业公司。旗舰功能原定两周后向最大客户交付，但工程侧进度亮了黄灯。今天这场 1v1，是升级到 CEO 之前的最后一次内部对齐。",
-    relationship: "共事两年的产品负责人与技术负责人，互相尊重但立场常年相反，都不想把事情闹到老板那里。",
-    acts: [
-      {
-        t: "第一幕 · 摸底",
-        d: "寒暄后进入正题：进度到底怎么样了？双方都在试探对方掌握了多少、还有多少余地。",
-      },
-      { t: "第二幕 · 摊牌边缘", teaser: "一个坏消息被摆上桌面，谈判进入拉锯……" },
-      { t: "第三幕 · 出路", teaser: "要么达成一个新方案，要么一起走进 CEO 办公室。" },
-    ],
-    hook: "由产品负责人开场：以一句轻松的寒暄切入，然后自然地问出你最想知道的那件事。",
-    roles: {
-      A: {
-        name: "Alex",
-        title: "产品负责人 (PM)",
-        persona: "务实、有推动力，擅长用问题引导对话。对客户承诺看得极重。",
-        stance: "希望尽量守住原定日期，至少要拿到一个可以向客户交代的确定方案。",
-        tasks: {
-          main: {
-            goal: "不直接施压，让对方在对话中主动说出一个具体的新交付日期。",
-            judge: "对方说出明确日期/周数，且不是被你逼问出来的。",
-          },
-          bonus: { goal: "让对方对你说出 \u201cyou're right\u201d 或 \u201cthat's fair\u201d。" },
-        },
-        p0: [
-          { en: "Help me understand the real blocker.", zh: "帮我理解真正卡住的点（引导而非质问）" },
-          { en: "What would it take to hit the date?", zh: "要守住日期，需要什么条件？" },
-        ],
-      },
-      B: {
-        name: "Jordan",
-        title: "技术负责人 (Tech Lead)",
-        persona: "严谨、护团队，说话留有余地，不轻易给承诺。",
-        stance: "需要为团队争取至少一周延期，但有一个不能说出口的原因。",
-        tasks: {
-          main: {
-            goal: "争取到至少一周延期，且全程不透露真实原因：核心工程师最近在面试别家，随时可能离职。",
-            judge: "拿到延期承诺，且从头到尾没有泄露人事风险。",
-          },
-          bonus: { goal: "对话中自然地用出 3 个技术比喻（如 \u201cIt's like changing engines mid-flight\u201d）。" },
-        },
-        p0: [
-          { en: "I'd rather under-promise and over-deliver.", zh: "我宁可少承诺、多交付" },
-          { en: "Realistically speaking, ...", zh: "现实一点说……（给出保守估计前的缓冲）" },
-        ],
-      },
-    },
-    p0shared: [
-      { en: "Let's take a step back.", zh: "我们退一步看（重置对话方向）" },
-      { en: "From my perspective, ...", zh: "从我的角度看……（表明立场不树敌）" },
-      { en: "I have some reservations about ...", zh: "我对……有些保留意见（委婉反对）" },
-      { en: "Can we align on the next step?", zh: "我们能就下一步达成一致吗？" },
-      { en: "What's the trade-off here?", zh: "这里的取舍是什么？" },
-    ],
-    p1: [
-      { from: "I think it's not good.", to: "I have some reservations about this.", zh: "委婉表达反对" },
-      { from: "We can't do it.", to: "That timeline isn't realistic given our current bandwidth.", zh: "拒绝但给出依据" },
-      { from: "It's very hard.", to: "It's a significant technical challenge.", zh: "把\u201c难\u201d说得专业" },
-      { from: "I agree.", to: "That's a fair point — let's build on it.", zh: "同意并推进" },
-    ],
-    p2: [
-      { en: "push back on ...", zh: "对……提出异议" },
-      { en: "bandwidth", zh: "（人力）余量：We don't have the bandwidth." },
-      { en: "scope creep", zh: "需求蔓延" },
-      { en: "meet halfway", zh: "各让一步" },
-      { en: "circle back", zh: "回头再谈：Let's circle back to this." },
-    ],
-    p3: [
-      { en: "Let's not boil the ocean.", zh: "别把摊子铺太大" },
-      { en: "We're aligned on the destination, just not the route.", zh: "目标一致，只是路径分歧" },
-      { en: "I don't want to die on this hill.", zh: "这一点我不坚持到底（战略性放弃）" },
-    ],
-    quiz: [
-      {
-        situation: "委婉地表达：你觉得这个 deadline 不现实。",
-        reference: "I have some reservations about the timeline — realistically, it isn't achievable with our current bandwidth.",
-        tip: "reservations + realistically 双缓冲，比 impossible 专业得多。",
-      },
-      {
-        situation: "对方情绪上来了，你想把对话拉回正轨。",
-        reference: "Let's take a step back and look at what we're both trying to protect here.",
-        tip: "step back + 共同利益，是降温的万能句式。",
-      },
-      {
-        situation: "你想知道到底卡在哪，但不想显得在质问。",
-        reference: "Help me understand the real blocker — what would it take to unblock it?",
-        tip: "Help me understand 把质问变成求助。",
-      },
-      {
-        situation: "承认对方说得有道理，同时把话题推进。",
-        reference: "That's a fair point — let's build on it and talk about options.",
-        tip: "先给 fair point，再 build on it，不丢立场。",
-      },
-    ],
-  },
-  {
-    id: "fourday",
-    title: "四天工作制之辩",
-    en: "The Four-Day Week Debate",
-    genre: "观点交锋",
-    difficulty: 3,
-    minutes: 22,
-    logline: "公司匿名问卷里 78% 的人想要四天工作制。你们俩受命在提案前吵明白：这是良药还是毒药？",
-    world:
-      "一家 200 人的设计咨询公司。管理层让两位资深员工先行辩论并共同署名一份建议书——但你们俩的真实看法截然相反。",
-    relationship: "同期入职的老同事，私交好，谁也说服不了谁，但这次必须交出一份共同结论。",
-    acts: [
-      { t: "第一幕 · 立场亮牌", d: "各自陈述核心观点与最强论据，试探对方论证里的薄弱处。" },
-      { t: "第二幕 · 交锋", teaser: "一份新数据入场，有人的论据开始动摇……" },
-      { t: "第三幕 · 共同结论", teaser: "建议书今晚要交，你们必须落在同一句话上。" },
-    ],
-    hook: "由支持方开场：用一个具体的场景（而不是抽象论点）描绘四天工作制下的一天，先声夺人。",
-    roles: {
-      A: {
-        name: "Sam",
-        title: "支持方",
-        persona: "理想主义但重证据，善用类比，语速快。",
-        stance: "坚信四天工作制能提升效率与留人，想推动试点。",
-        tasks: {
-          main: {
-            goal: "让对方在对话中明确承认你的至少一个论点成立（如说出 \u201cI'll give you that\u201d / \u201cthat's true\u201d）。",
-            judge: "对方有明确让步语句，且是针对你的论点。",
-          },
-          bonus: { goal: "用一个 \u201cImagine if ...\u201d 开头的假设场景完成一次论证。" },
-        },
-        p0: [
-          { en: "The evidence suggests ...", zh: "证据表明……（用数据说话）" },
-          { en: "Imagine if we ran a three-month pilot.", zh: "设想我们跑一个三个月试点" },
-        ],
-      },
-      B: {
-        name: "Riley",
-        title: "质疑方",
-        persona: "冷静、挑剔，擅长找例外情况，不轻易亮明全部底牌。",
-        stance: "认为客户型业务玩不转四天制，但不想当\u201c反对一切的人\u201d。",
-        tasks: {
-          main: {
-            goal: "不使用 \u201cI disagree\u201d 式的正面否定，引导对方主动承认方案里存在一个重大风险。",
-            judge: "对方说出风险（如客户响应、排期塌陷），且是被你的提问引导出来的。",
-          },
-          bonus: { goal: "自然地引用一个统计数字完成一次反驳（可以现编，但要说得像真的）。" },
-        },
-        p0: [
-          { en: "Playing devil's advocate, ...", zh: "唱个反调……（反对前的免责声明）" },
-          { en: "How would that work when a client calls on Friday?", zh: "客户周五来电话时这怎么运转？（具体场景发难）" },
-        ],
-      },
-    },
-    p0shared: [
-      { en: "That's a valid point, but ...", zh: "有道理，但是……（承认+转折）" },
-      { en: "Where do you stand on ...?", zh: "你在……上的立场是？" },
-      { en: "Let me push back a little.", zh: "让我稍微反驳一下" },
-      { en: "The way I see it, ...", zh: "在我看来……" },
-      { en: "Can we agree on the criteria first?", zh: "我们能先统一评判标准吗？" },
-    ],
-    p1: [
-      { from: "I don't agree.", to: "I see it differently — here's why.", zh: "反对但不对抗" },
-      { from: "You are wrong.", to: "I think that argument has a blind spot.", zh: "指出漏洞而非否定人" },
-      { from: "Maybe.", to: "That could work under certain conditions.", zh: "有条件地让步" },
-      { from: "It's good for workers.", to: "It measurably improves retention and focus.", zh: "把好处说得可度量" },
-    ],
-    p2: [
-      { en: "a double-edged sword", zh: "双刃剑" },
-      { en: "correlation isn't causation", zh: "相关不等于因果" },
-      { en: "concede a point", zh: "承认对方某点成立" },
-      { en: "for the sake of argument", zh: "姑且假设（推演用）" },
-      { en: "common ground", zh: "共识基础：Let's find common ground." },
-    ],
-    p3: [
-      { en: "That's a strawman of my position.", zh: "你在攻击一个我没说过的稻草人" },
-      { en: "The burden of proof is on the proposal.", zh: "举证责任在提案方" },
-      { en: "Let's steelman the other side.", zh: "先把对方论点强化到最强再反驳" },
-    ],
-    quiz: [
-      {
-        situation: "对方说得有道理，你想承认这一点但保住整体立场。",
-        reference: "I'll give you that — but it doesn't change the bigger picture.",
-        tip: "give you that 是最地道的\u201c这点算你对\u201d。",
-      },
-      {
-        situation: "不正面否定，用提问让对方看到自己方案的风险。",
-        reference: "How would that work when a client escalates on a Friday afternoon?",
-        tip: "用具体到时间的场景提问，比 I disagree 有力十倍。",
-      },
-      {
-        situation: "辩论僵住了，你想先统一评判标准。",
-        reference: "Before we go further, can we agree on what success would look like?",
-        tip: "what success looks like 是拉齐标准的黄金句。",
-      },
-      {
-        situation: "用假设场景推进你的论证。",
-        reference: "Imagine if we ran a three-month pilot with one team — what's the worst that could happen?",
-        tip: "Imagine if + what's the worst 组合拳：先造梦再拆险。",
-      },
-    ],
-  },
-  {
-    id: "rooftop",
-    title: "天台重逢",
-    en: "The Rooftop Reunion",
-    genre: "社交闲聊",
-    difficulty: 1,
-    minutes: 18,
-    logline: "海外一场行业酒会的天台上，你撞见了三年没见的老同事。你们都各有心事，也各有所图。",
-    world:
-      "新加坡一场行业峰会的官方酒会，天台露台，人手一杯。你们曾在同一家公司并肩两年，后来各奔东西，如今在异国重逢。",
-    relationship: "三年没联系的前同事，当年关系不错。彼此都好奇对方过得怎样——也都嗅到了对方话里有话。",
-    acts: [
-      { t: "第一幕 · 破冰叙旧", d: "认出彼此、寒暄、快速交换这三年的人生梗概，试探对方的近况成色。" },
-      { t: "第二幕 · 话里有话", teaser: "有人开始把话题往某个方向引……" },
-      { t: "第三幕 · 后会有期", teaser: "酒会快散场了，这段重逢要以什么方式延续？" },
-    ],
-    hook: "由先认出对方的一方开场：用一句惊喜的招呼 + 一个当年的共同记忆瞬间拉近距离。",
-    roles: {
-      A: {
-        name: "Casey",
-        title: "留在大厂的那位",
-        persona: "健谈、观察力强，习惯用玩笑降低对话的严肃度。",
-        stance: "在原公司升了两级，但最近隐约在想要不要出来闯。",
-        tasks: {
-          main: {
-            goal: "不直接问 \u201care you happy?\u201d，通过闲聊判断出对方在新公司过得是否如意，并在对话里说出你的判断让对方确认。",
-            judge: "你说出了判断（如 \u201csounds like you're thriving\u201d），且对方确认或纠正。",
-          },
-          bonus: { goal: "让对方主动提议\u201c再约一次\u201d（而不是你先开口）。" },
-        },
-        p0: [
-          { en: "How are you finding the new gig?", zh: "新工作感觉如何？（gig 比 job 更口语）" },
-          { en: "Reading between the lines, ...", zh: "听你话里的意思……（说出你的判断）" },
-        ],
-      },
-      B: {
-        name: "Morgan",
-        title: "出去创业的那位",
-        persona: "谦逊但有故事，擅长讲述，不喜欢直接求人。",
-        stance: "创业第二年，正在找进入大客户的门路——对方的公司正是你的目标客户。",
-        tasks: {
-          main: {
-            goal: "不直接开口求引荐，引导对方主动说出\u201c我可以帮你引荐/介绍\u201d之类的话。",
-            judge: "对方主动提出 intro/引荐，且你从未直接请求。",
-          },
-          bonus: { goal: "讲一个 30 秒的小故事：有开头、有转折、有笑点（punchline）。" },
-        },
-        p0: [
-          { en: "Funny you mention that — we've been working on ...", zh: "说来巧了——我们正在做……（顺势引入你的事）" },
-          { en: "Long story short, ...", zh: "长话短说……（讲故事的开关）" },
-        ],
-      },
-    },
-    p0shared: [
-      { en: "It's been ages!", zh: "好久不见！（比 long time no see 地道）" },
-      { en: "Fill me in — what have you been up to?", zh: "快跟我说说你这几年" },
-      { en: "That reminds me of ...", zh: "这让我想起……（衔接话题）" },
-      { en: "No way!", zh: "不会吧！（真诚的惊讶）" },
-      { en: "We should grab coffee while you're in town.", zh: "趁你在这儿我们喝个咖啡吧" },
-    ],
-    p1: [
-      { from: "How is your job?", to: "How are you finding the new gig?", zh: "问近况问得像朋友" },
-      { from: "I'm fine.", to: "Can't complain — busy in a good way.", zh: "回答近况带点内容" },
-      { from: "I changed my job.", to: "I took the leap and went out on my own.", zh: "把\u201c换工作\u201d讲成故事" },
-      { from: "Really?", to: "Get out! Since when?", zh: "惊讶得更生动" },
-    ],
-    p2: [
-      { en: "catch up", zh: "叙旧：We have so much to catch up on." },
-      { en: "out of the blue", zh: "毫无预兆地" },
-      { en: "a small world moment", zh: "\u201c世界真小\u201d时刻" },
-      { en: "put in a good word", zh: "替某人美言" },
-      { en: "keep me posted", zh: "有进展告诉我" },
-    ],
-    p3: [
-      { en: "We go way back.", zh: "我们是老交情了" },
-      { en: "Speak of the devil!", zh: "说曹操曹操到" },
-      { en: "Let's not make it another three years.", zh: "别再隔三年才见了（告别金句）" },
-    ],
-    quiz: [
-      {
-        situation: "重逢开场：表达惊喜并唤起一段共同记忆。",
-        reference: "No way — Morgan?! It's been ages! Last time I saw you, we were pulling an all-nighter before the big launch.",
-        tip: "惊叹 + 具体共同记忆，瞬间回到当年。",
-      },
-      {
-        situation: "想知道对方过得好不好，但不能问得太直接。",
-        reference: "So how are you finding it? You look like the move agreed with you.",
-        tip: "用观察代替提问：the move agreed with you（这步棋走对了）。",
-      },
-      {
-        situation: "把\u201c我离职创业了\u201d讲成一个有画面的故事开头。",
-        reference: "Long story short — I took the leap last spring, and it's been a rollercoaster ever since.",
-        tip: "took the leap + rollercoaster，两个意象顶十句流水账。",
-      },
-      {
-        situation: "散场前提议保持联系，说得具体而不客套。",
-        reference: "We should grab coffee while you're in town — I'm free Thursday, does that work?",
-        tip: "加上具体时间，客套话就变成了真邀请。",
-      },
-    ],
-  },
-];
 
 /* ============================================================
    预置剧本库（6 部：双主角 Drama）
@@ -659,7 +347,10 @@ async function sSet(key, val, shared = true) {
 async function sDel(key, shared = true) {
   try {
     await window.storage.delete(key, shared);
-  } catch {}
+    return true;
+  } catch {
+    return false;
+  }
 }
 async function sList(prefix, shared = true) {
   try {
@@ -871,7 +562,7 @@ function getRequestModelConfig() {
 }
 
 // ---------- 模型 API（SOS、教练、动态剧情等） ----------
-async function callClaude(prompt, { allowFallback = true } = {}) {
+async function callModel(prompt, { allowFallback = true } = {}) {
   const res = await fetch("/api/text", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -903,7 +594,7 @@ export default function App() {
   const [prepMap, setPrepMap] = useState({}); // {scriptId: {studied:true}}
   const [notebook, setNotebook] = useState([]); // 我的复习本（个人存储）
   const [lastRoom, setLastRoom] = useState(null); // 上一场房间码（刷新恢复用）
-  const [customScripts, setCustomScripts] = useState([]); // 自创剧本（共享存储，索引在个人）
+  const [customScripts, setCustomScripts] = useState([]); // 自创剧本（仅本机保存，进房后随房间分享）
   const [modelConfig, setModelConfig] = useState(() => loadModelConfig());
   const customScriptsRef = useRef(customScripts);
   customScriptsRef.current = customScripts;
@@ -936,11 +627,11 @@ export default function App() {
         const st = await sGet(`prep:${s.id}`, false);
         if (st) pm[s.id] = st;
       }
-      // 自创剧本：个人索引 → 共享存储取全文
+      // 自创剧本：个人索引 → 本机存储取全文
       const idx = (await sGet("myScriptIds", false)) || [];
       const customs = [];
       for (const id of idx) {
-        const sc = await sGet(`cscript:${id}`);
+        const sc = await sGet(`cscript:${id}`, false);
         if (sc?.id) {
           customs.push(sc);
           const st = await sGet(`prep:${sc.id}`, false);
@@ -975,13 +666,13 @@ export default function App() {
       if (!alive) return;
       if (m) {
         setMeta(m);
-        // 房主选了我这边还没有的自创剧本 → 从共享存储拉取
+        // 房主选了我这边还没有的自创剧本 → 从受保护的房间 meta 拉取
         if (
           m.packId &&
           !SCRIPTS.some((s) => s.id === m.packId) &&
           !customScriptsRef.current.some((s) => s.id === m.packId)
         ) {
-          const sc = await sGet(`cscript:${m.packId}`);
+          const sc = m.customScript?.id === m.packId ? m.customScript : null;
           if (sc?.id) setCustomScripts((cs) => (cs.some((x) => x.id === sc.id) ? cs : [...cs, sc]));
         }
       }
@@ -1024,19 +715,15 @@ export default function App() {
   const updateModelConfig = (next) => setModelConfig(saveModelConfig(next));
 
   const createRoom = async () => {
-    const code = genCode();
-    const m = { hostId: profile.id, createdAt: Date.now(), packId: null, milestone: 2 };
-    const ok = await sSet(`room:${code}:meta`, m);
-    if (!ok) return showToast("房间创建失败，请重试", "err");
-    await sSet(`room:${code}:member:${profile.id}`, {
-      userId: profile.id,
-      name: profile.name,
-      ready: false,
-      headphones: false,
-      role: null,
-      prepDone: false,
-      joinedAt: Date.now(),
-    });
+    let created = null;
+    let code = null;
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      code = genCode();
+      created = await window.storage.createRoom({ code, userId: profile.id, name: profile.name });
+      if (created.ok || created.status !== 409) break;
+    }
+    if (!created?.ok) return showToast("房间创建失败，请稍后重试", "err");
+    const m = created.meta;
     await sSet("lastRoom", { code, at: Date.now() }, false);
     setLastRoom(code);
     setRoom({ code });
@@ -1047,27 +734,15 @@ export default function App() {
 
   const joinRoom = async (codeRaw) => {
     const code = codeRaw.trim().toUpperCase();
-    if (code.length !== 6) return showToast("房间码是 6 位字母数字", "err");
-    const m = await sGet(`room:${code}:meta`);
-    if (!m) return showToast("没有找到这个房间，检查一下房间码", "err");
-    const memberKeys = await sList(`room:${code}:member:`);
-    const isMember = memberKeys.some((k) => k.endsWith(`:${profile.id}`));
-    if (!isMember && memberKeys.length >= 2)
-      return showToast("这个房间已经有两位演员了", "err");
-    // 重新加入（如刷新后）保留原有成员记录：角色、点亮、SOS 等不丢
-    const existing = isMember ? await sGet(`room:${code}:member:${profile.id}`) : null;
-    await sSet(
-      `room:${code}:member:${profile.id}`,
-      existing || {
-        userId: profile.id,
-        name: profile.name,
-        ready: false,
-        headphones: false,
-        role: null,
-        prepDone: false,
-        joinedAt: Date.now(),
-      }
-    );
+    if (!/^[A-HJ-NP-Z2-9]{6}$/.test(code)) return showToast("房间码是 6 位字母数字", "err");
+    const joined = await window.storage.joinRoom({ code, userId: profile.id, name: profile.name });
+    if (!joined.ok) {
+      if (joined.status === 404) return showToast("没有找到这个房间，或房间已过期", "err");
+      if (joined.status === 409) return showToast("房间已满，或这个身份已在其他设备加入", "err");
+      if (joined.status === 429) return showToast("尝试次数太多，请十分钟后再试", "err");
+      return showToast("加入房间失败，请稍后重试", "err");
+    }
+    const m = joined.meta;
     await sSet("lastRoom", { code, at: Date.now() }, false);
     setLastRoom(code);
     setRoom({ code });
@@ -1095,7 +770,8 @@ export default function App() {
   );
 
   const setPack = async (packId) => {
-    const next = { ...meta, packId };
+    const customScript = customScriptsRef.current.find((script) => script.id === packId) || null;
+    const next = { ...meta, packId, customScript };
     await sSet(`room:${room.code}:meta`, next);
     setMeta(next);
   };
@@ -1141,7 +817,10 @@ export default function App() {
   };
 
   const leaveRoom = async () => {
-    if (room) await sDel(`room:${room.code}:member:${profile.id}`);
+    if (room) {
+      const left = await sDel(`room:${room.code}:member:${profile.id}`);
+      if (left) window.storage.clearRoom(room.code);
+    }
     setRoom(null);
     setMeta(null);
     setMembers([]);
@@ -1173,7 +852,7 @@ export default function App() {
   };
 
   const saveCustomScript = async (script) => {
-    await sSet(`cscript:${script.id}`, script);
+    await sSet(`cscript:${script.id}`, script, false);
     const idx = (await sGet("myScriptIds", false)) || [];
     if (!idx.includes(script.id)) await sSet("myScriptIds", [...idx, script.id], false);
     setCustomScripts((cs) => (cs.some((x) => x.id === script.id) ? cs.map((x) => (x.id === script.id ? script : x)) : [...cs, script]));
@@ -1183,6 +862,7 @@ export default function App() {
   const deleteCustomScript = async (id) => {
     const idx = (await sGet("myScriptIds", false)) || [];
     await sSet("myScriptIds", idx.filter((x) => x !== id), false);
+    await sDel(`cscript:${id}`, false);
     setCustomScripts((cs) => cs.filter((x) => x.id !== id));
   };
 
@@ -1297,7 +977,7 @@ function Shell({ children }) {
           <div>
             <div className="ds-display text-2xl sm:text-3xl">DramaSpeak</div>
             <div className="text-xs mt-1 tracking-wide" style={{ color: T.faint }}>
-              剧本杀疯狂之夜 · 职场英语双人局
+              沉浸式双人英语剧场 · 每一次开口都推动剧情
             </div>
           </div>
           <SpotMark />
@@ -1670,12 +1350,14 @@ function ModelSettings({ config, onChange, showToast }) {
             </Btn>
             {hasPersonalModel && (
               <Btn kind="ghost" onClick={() => update({ ...emptyModelConfig })}>
-                改用服务器默认模型
+                关闭个人模型
               </Btn>
             )}
           </div>
           <p className="text-xs leading-relaxed" style={{ color: T.faint }}>
-            你的 key 只随本机发起的模型请求发送到对应服务商，不会写入房间、复盘或 GitHub。
+            你的 key 默认只保存在本次浏览器会话中；模型请求会先经过 DramaSpeak 的 Vercel
+            服务端代理，再转发给所选服务商。Key 不会写入房间、复盘或 GitHub。勾选“记住”后会保存在此设备的
+            localStorage，请只在自己的设备上使用。
           </p>
         </div>
       )}
@@ -2652,8 +2334,8 @@ function Stage({ room, meta, scripts, roomState, profile, members, onUpdateMe, o
     while (translationOnRef.current && translationQueueRef.current.length) {
       const { line, key } = translationQueueRef.current.shift();
       try {
-        const raw = await callClaude(
-          `Translate this spoken workplace English into concise, natural Simplified Chinese. Preserve the speaker's tone and intent. Do not explain or answer the sentence. Respond ONLY as JSON: {"translation":"中文翻译"}\n\nEnglish utterance: ${JSON.stringify(line.text)}`,
+        const raw = await callModel(
+          `Translate this spoken English into concise, natural Simplified Chinese. Preserve the speaker's tone and intent. Do not explain or answer the sentence. Respond ONLY as JSON: {"translation":"中文翻译"}\n\nEnglish utterance: ${JSON.stringify(line.text)}`,
           { allowFallback: false }
         );
         const parsed = parseJSONLoose(raw);
@@ -2745,7 +2427,7 @@ I am stuck. Give me exactly 3 hints to keep going. STRICT RULES:
 - Mix at least 2 different types.
 Respond ONLY with JSON, no markdown fences: {"hints":[{"type":"word|stem|direction","text":"..."}]}`;
     try {
-      const raw = await callClaude(prompt);
+      const raw = await callModel(prompt);
       const parsed = parseJSONLoose(raw);
       if (parsed?.hints?.length) {
         setSosHints(parsed.hints.slice(0, 3));
@@ -3161,7 +2843,7 @@ function Interlude({ script, roomState, isHost, me, partner, actTranscript, onWr
       try {
         const roleA = script.roles.A;
         const roleB = script.roles.B;
-        const raw = await callClaude(
+        const raw = await callModel(
           buildInterludePrompt(script, endedIdx, actTranscript(endedIdx), roleA, roleB)
         );
         const parsed = parseJSONLoose(raw);
@@ -3432,9 +3114,9 @@ function ReviewFlow({ room, sessionId, script, profile, me, partner, isHost, p0I
         const pGuess = partner.guessText || "(未猜)";
         const guessAboutB = myL === "A" ? meGuess : pGuess;
         const guessAboutA = myL === "B" ? meGuess : pGuess;
-        const p1 = parseJSONLoose(await callClaude(buildVerdictPrompt(script, transcript, guessAboutB, guessAboutA)));
+        const p1 = parseJSONLoose(await callModel(buildVerdictPrompt(script, transcript, guessAboutB, guessAboutA)));
         if (!p1?.tasks) throw new Error("bad1");
-        const p2 = parseJSONLoose(await callClaude(buildReportsPrompt(script, transcript)));
+        const p2 = parseJSONLoose(await callModel(buildReportsPrompt(script, transcript)));
         if (!p2?.A) throw new Error("bad2");
         const rv = { part1: p1, part2: p2, at: Date.now() };
         await sSet(`room:${room.code}:review`, rv);
@@ -4034,7 +3716,7 @@ export const __TEST__ = { containsPhrase, phraseTokens, normWords, countFillers,
 
 /* ================= M6 · AI 剧本生成 + 共创向导 ================= */
 
-const GENRE_TAGS = ["职场", "谈判", "悬疑", "危机", "高管", "客户", "峰会", "商务社交"];
+const GENRE_TAGS = ["职场", "谈判", "悬疑", "危机", "科幻", "家庭秘密", "情感博弈", "商务社交"];
 const LANG_GOALS = ["委婉拒绝", "谈判与让步", "讲一个完整的故事", "打断与接话", "闲聊破冰", "观点论证", "提问与试探", "情绪表达"];
 const SPICE = [
   { key: "mild", label: "🌱 温和", desc: "常规目标，稳稳练习" },
@@ -4051,12 +3733,12 @@ function buildConceptsPrompt(mode, seed, genres, avoid) {
       : `Story seed: ${seed}`;
   return `You are a playwright designing playful, theatre-first, two-person English roleplay scenarios for Chinese B1-B2 learners. Each scenario is a roughly 25-minute mini drama with exactly one male protagonist and one female protagonist. The two players must WIN THROUGH TALKING — every concept needs verbal tension (information gaps, conflicting interests, time pressure, or secrets), a reveal or reversal, and a satisfying ending.
 
-SETTING BOUNDARY (non-negotiable): Every scenario must happen in a real workplace or formal professional-social setting: office, client meeting, boardroom, industry conference, business dinner, investor meeting, trade-show backstage, or business travel. The drama must be plausible in a professional context and teach useful workplace/formal-social English. Do not use romance, weddings, school, casual friendship hangouts, family drama, or purely daily-life settings.
+SETTING BOUNDARY (non-negotiable): Scenarios may use workplace tension, mystery, science fiction, family secrets, travel, friendship, or relationship drama. Whatever the genre, the conflict must be resolved mainly through conversation and teach transferable spoken English: clarifying, probing, persuading, setting boundaries, negotiating, storytelling, or expressing emotion. Avoid graphic violence, explicit sexual content, and scenarios centered on minors.
 
 ${src}
 ${avoid ? `Must be clearly different from these previous concepts: ${avoid}` : ""}
 
-Give exactly 3 distinct story concepts. Make titles memorable, playful, and specific; avoid generic workplace debates. Make the roles' gender unambiguous from their names and professional identities. All text in Chinese except character names.
+Give exactly 3 distinct story concepts. Make titles memorable, playful, and specific; avoid generic debates. Make the roles' gender unambiguous from their names and identities. All text in Chinese except character names.
 Respond ONLY with JSON, no markdown fences:
 {"concepts":[{"title":"中文剧名(2-6字)","tagline":"一句话钩子(≤25字)","conflict":"核心冲突(≤30字)","roles":[{"name":"英文名","title":"中文身份(≤8字)"},{"name":"英文名","title":"中文身份(≤8字)"}]}]}`;
 }
@@ -4078,8 +3760,9 @@ DRAMA FORMAT (critical):
 - Exactly two protagonists: Role A is male and Role B is female. Make their genders unmistakable through names, identities, and persona wording.
 - Give the story a vivid premise, a twist/reversal, and a finale with a real choice. It should feel fun to perform, not like an English textbook debate.
 - Use a memorable, specific title; avoid generic titles such as "The Debate" or "A Meeting".
-- The setting MUST be a real workplace or formal professional-social setting: office, client meeting, boardroom, industry conference, business dinner, investor meeting, trade-show backstage, or business travel. The language must be useful for work or formal networking.
-- Do not use romance, weddings, school, casual friendship hangouts, family drama, or purely daily-life settings.
+- The setting may be professional or personal: workplace tension, mystery, science fiction, family secrets, travel, friendship, or relationship drama are all allowed.
+- The conflict must be resolved mainly through conversation, and the language must practice transferable spoken-English skills such as clarifying, probing, persuading, setting boundaries, negotiating, storytelling, or expressing emotion.
+- Avoid graphic violence, explicit sexual content, and scenarios centered on minors.
 
 HIDDEN TASK RULES (critical):
 - Each role gets 1 main task + 1 bonus task, secret from the other player.
@@ -4142,6 +3825,13 @@ function assembleScript(core, lang) {
   };
 }
 
+function countPrepItems(script, key) {
+  if (script.rolePrep) {
+    return ["A", "B"].reduce((total, role) => total + (script.rolePrep?.[role]?.[key]?.length || 0), 0);
+  }
+  return script[key]?.length || 0;
+}
+
 function Wizard({ onSave, onBack, showToast }) {
   const [step, setStep] = useState(0); // 0 起点 1 雏形 2 预览
   const [mode, setMode] = useState("real"); // real | genre | idea
@@ -4175,7 +3865,7 @@ function Wizard({ onSave, onBack, showToast }) {
   const genConcepts = async (avoid) => {
     setBusy("编剧在打三个腹稿…");
     try {
-      const raw = await callClaude(buildConceptsPrompt(mode, seed.trim(), [...genres], avoid));
+      const raw = await callModel(buildConceptsPrompt(mode, seed.trim(), [...genres], avoid));
       const p = parseJSONLoose(raw);
       if (!p?.concepts?.length) throw new Error("bad");
       setConcepts(p.concepts.slice(0, 3));
@@ -4190,10 +3880,10 @@ function Wizard({ onSave, onBack, showToast }) {
   const genFull = async (rev) => {
     setBusy("正在成稿：剧情与暗线…");
     try {
-      const core = parseJSONLoose(await callClaude(buildDramaPrompt(seedDesc(), spice, [...goals], rev)));
+      const core = parseJSONLoose(await callModel(buildDramaPrompt(seedDesc(), spice, [...goals], rev)));
       if (!core?.roles?.A?.tasks?.main?.goal) throw new Error("bad core");
       setBusy("正在配课：表达卡与自测…");
-      const lang = parseJSONLoose(await callClaude(buildLangPrompt(core, [...goals])));
+      const lang = parseJSONLoose(await callModel(buildLangPrompt(core, [...goals])));
       if (!lang?.p0shared?.length) throw new Error("bad lang");
       setDraft(assembleScript(core, lang));
       setRevision("");
@@ -4279,8 +3969,10 @@ function Wizard({ onSave, onBack, showToast }) {
         </div>
         <Card className="!p-4">
           <div className="text-xs" style={{ color: T.faint }}>
-            配套表达卡：P0 ×{draft.p0shared.length + 4} · 升级句 ×{draft.p1.length} · 地道层 ×{draft.p2.length} · 自测 ×
-            {draft.quiz.length} —— 入库后在备课页查看全部
+            配套表达卡：P0 ×
+            {draft.p0shared.length + (draft.roles.A.p0?.length || 0) + (draft.roles.B.p0?.length || 0)} · 升级句 ×
+            {countPrepItems(draft, "p1")} · 地道层 ×{countPrepItems(draft, "p2")} · 自测 ×
+            {countPrepItems(draft, "quiz")} —— 入库后在备课页查看全部
           </div>
         </Card>
         <Card>
