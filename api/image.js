@@ -4,43 +4,87 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { prompt } = req.body || {};
-  if (!prompt || typeof prompt !== "string") {
+  const { prompt, config } = req.body || {};
+  if (!prompt || typeof prompt !== "string" || prompt.length > 4000) {
     return res.status(400).json({ error: "Missing prompt" });
   }
 
+  const runtime = config ? resolveClientImageRuntime(config) : resolveServerImageRuntime();
+  if (!runtime) {
+    return res.status(200).json({ imageUrl: null, demo: true, reason: "image-model-unavailable" });
+  }
+
+  try {
+    const imageUrl = await callOpenAICompatibleImage(prompt, runtime);
+
+    return res.status(200).json({ imageUrl, provider: runtime.provider, model: runtime.model });
+  } catch (error) {
+    return res.status(500).json({ error: "Image model API error", detail: error.message });
+  }
+}
+
+function resolveClientImageRuntime(value) {
+  if (!value || typeof value !== "object") return null;
+  const provider = String(value.provider || "").toLowerCase();
+  const apiKey = String(value.apiKey || "").trim();
+  if (!apiKey || apiKey.length > 512) return null;
+  if (provider === "glm" && apiKey.startsWith("sk-code")) return null;
+
+  if (provider === "glm") {
+    return {
+      provider,
+      apiKey,
+      baseUrl: "https://open.bigmodel.cn/api/paas/v4",
+      model: "cogview-3-flash",
+      size: "1344x768",
+      label: "GLM image",
+    };
+  }
+
+  if (provider === "openai-compatible") {
+    return {
+      provider,
+      apiKey,
+      baseUrl: "https://api.openai.com/v1",
+      model: "gpt-image-2",
+      size: "1536x1024",
+      label: "OpenAI image",
+    };
+  }
+
+  return null;
+}
+
+function resolveServerImageRuntime() {
   const provider = (
     process.env.IMAGE_PROVIDER ||
     (process.env.GLM_IMAGE_API_KEY || process.env.GLM_API_KEY ? "glm" : "") ||
     (process.env.IMAGE_API_KEY ? "openai-compatible" : "")
   ).toLowerCase();
 
-  if (!provider || provider === "none") {
-    return res.status(200).json({ imageUrl: null, demo: true });
+  if (!provider || provider === "none") return null;
+  if (provider === "glm") {
+    return {
+      provider,
+      apiKey: process.env.GLM_IMAGE_API_KEY || process.env.GLM_API_KEY || process.env.IMAGE_API_KEY,
+      baseUrl:
+        process.env.GLM_IMAGE_BASE_URL ||
+        process.env.GLM_BASE_URL ||
+        "https://open.bigmodel.cn/api/paas/v4",
+      model: process.env.GLM_IMAGE_MODEL || process.env.IMAGE_MODEL || "cogview-3-flash",
+      size: process.env.IMAGE_SIZE || "1344x768",
+      label: "GLM image",
+    };
   }
 
-  try {
-    const imageUrl =
-      provider === "glm"
-        ? await callOpenAICompatibleImage(prompt, {
-            apiKey: process.env.GLM_IMAGE_API_KEY || process.env.GLM_API_KEY || process.env.IMAGE_API_KEY,
-            baseUrl: process.env.GLM_IMAGE_BASE_URL || process.env.GLM_BASE_URL || "https://open.bigmodel.cn/api/paas/v4",
-            model: process.env.GLM_IMAGE_MODEL || process.env.IMAGE_MODEL || "cogview-3-flash",
-            size: process.env.IMAGE_SIZE || "1024x1024",
-            label: "GLM image",
-          })
-        : await callOpenAICompatibleImage(prompt, {
-            apiKey: process.env.IMAGE_API_KEY,
-            baseUrl: process.env.IMAGE_BASE_URL,
-            model: process.env.IMAGE_MODEL,
-            size: process.env.IMAGE_SIZE || "1024x1024",
-            label: "OpenAI-compatible image",
-          });
-
-    return res.status(200).json({ imageUrl, provider });
-  } catch (error) {
-    return res.status(500).json({ error: "Image model API error", detail: error.message });
-  }
+  return {
+    provider: "openai-compatible",
+    apiKey: process.env.IMAGE_API_KEY,
+    baseUrl: process.env.IMAGE_BASE_URL || "https://api.openai.com/v1",
+    model: process.env.IMAGE_MODEL || "gpt-image-2",
+    size: process.env.IMAGE_SIZE || "1536x1024",
+    label: "OpenAI-compatible image",
+  };
 }
 
 async function callOpenAICompatibleImage(prompt, { apiKey, baseUrl, model, size, label }) {

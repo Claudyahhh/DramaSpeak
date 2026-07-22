@@ -734,6 +734,7 @@ const MODEL_CONFIG_PERSIST_KEY = "dramaspeak:model-config:remembered";
 const MODEL_PROVIDERS = {
   glm: {
     label: "GLM（智谱）",
+    imageLabel: "CogView-3-Flash",
     defaultModel: "glm-5.2",
     models: [
       { id: "glm-5.2", label: "GLM-5.2（推荐）" },
@@ -804,6 +805,7 @@ const MODEL_PROVIDERS = {
   },
   "openai-compatible": {
     label: "OpenAI",
+    imageLabel: "GPT Image 2",
     defaultModel: "gpt-5.6-terra",
     models: [
       { id: "gpt-5.6-sol", label: "GPT-5.6 Sol（最高能力）" },
@@ -1104,6 +1106,7 @@ export default function App() {
       if (!room) return;
       const next = { ...(roomStateRef.current || {}), ...patch };
       await sSet(`room:${room.code}:state`, next);
+      roomStateRef.current = next;
       setRoomState(next);
     },
     [room?.code]
@@ -1111,6 +1114,7 @@ export default function App() {
 
   const startShow = async () => {
     const sessionId = Date.now();
+    const openingScript = allScripts.find((script) => script.id === meta?.packId);
     await updateMe({ endActVote: false, p0Lit: [], sosCount: 0, guessDone: false, guessText: "" });
     await sDel(`room:${room.code}:review`);
     await writePhase({
@@ -1123,6 +1127,17 @@ export default function App() {
       interludeFor: null,
     });
     setView("stage");
+    if (openingScript?.imagePrompt) {
+      generateSceneImage(openingScript.imagePrompt)
+        .then(async (imageUrl) => {
+          if (!imageUrl || roomStateRef.current?.sessionId !== sessionId) return;
+          const dynActs = roomStateRef.current?.dynActs || {};
+          await writePhase({
+            dynActs: { ...dynActs, 0: { ...(dynActs[0] || {}), imageUrl } },
+          });
+        })
+        .catch(() => {});
+    }
   };
 
   const leaveRoom = async () => {
@@ -1531,6 +1546,8 @@ function ModelSettings({ config, onChange, showToast }) {
   const [open, setOpen] = useState(false);
   const [testing, setTesting] = useState(false);
   const hasPersonalModel = config.enabled && !!config.apiKey;
+  const imageLabel = MODEL_PROVIDERS[config.provider].imageLabel;
+  const isGlmCodingKey = config.provider === "glm" && config.apiKey.startsWith("sk-code");
 
   const update = (patch) => onChange({ ...config, ...patch });
   const selectProvider = (provider) =>
@@ -1617,6 +1634,14 @@ function ModelSettings({ config, onChange, showToast }) {
             </select>
           </label>
 
+          <p className="text-xs leading-relaxed" style={{ color: imageLabel ? T.jade : T.faint }}>
+            {isGlmCodingKey
+              ? "检测到 GLM Coding Plan Key：可用于文本，但不能调用 CogView；生成图片需换成智谱开放平台通用 Key。"
+              : imageLabel
+              ? `一份 Key 同时驱动文本和三幕场景图；图片由 ${imageLabel} 自动生成。`
+              : "当前厂商的 Key 仅驱动文本；三幕图片将使用 DramaSpeak 场景卡。"}
+          </p>
+
           <label className="block text-xs" style={{ color: T.faint }}>
             API key
             <input
@@ -1641,7 +1666,7 @@ function ModelSettings({ config, onChange, showToast }) {
 
           <div className="flex gap-2">
             <Btn kind="panel" onClick={testConnection} disabled={testing || !config.apiKey}>
-              {testing ? "验证中…" : "验证连接"}
+              {testing ? "验证中…" : "验证文本连接"}
             </Btn>
             {hasPersonalModel && (
               <Btn kind="ghost" onClick={() => update({ ...emptyModelConfig })}>
@@ -2792,7 +2817,12 @@ Respond ONLY with JSON, no markdown fences: {"hints":[{"type":"word|stem|directi
   const dynAct = roomState?.dynActs?.[actIndex];
   const act =
     actIndex === 0
-      ? { t: script.acts[0].t, d: script.acts[0].d, hook: script.hook, imageUrl: null }
+      ? {
+          t: script.acts[0].t,
+          d: script.acts[0].d,
+          hook: script.hook,
+          imageUrl: dynAct?.imageUrl || null,
+        }
       : dynAct
       ? { t: dynAct.title, d: dynAct.brief, hook: dynAct.hook, imageUrl: dynAct.imageUrl || null }
       : { t: script.acts[actIndex]?.t || `第${actIndex + 1}幕`, d: "剧情载入中…", hook: "", imageUrl: null };
@@ -3066,7 +3096,7 @@ function StatCard({ label, value, unit }) {
 
 /* ================= M4 · 幕间 + 动态剧情 + 场景卡 ================= */
 
-// 图片生成：优先使用自定义浏览器注入函数，其次走 Vercel /api/image；未配置时降级 SVG 场景卡
+// 图片生成：复用首页模型配置中的同一 Key；未配置或厂商不支持时降级为场景卡。
 async function generateSceneImage(prompt) {
   try {
     if (typeof window.DUO_IMAGE_API === "function") {
@@ -3078,7 +3108,7 @@ async function generateSceneImage(prompt) {
     const res = await fetch("/api/image", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt }),
+      body: JSON.stringify({ prompt, config: getRequestModelConfig() }),
     });
     if (!res.ok) return null;
     const data = await res.json();
